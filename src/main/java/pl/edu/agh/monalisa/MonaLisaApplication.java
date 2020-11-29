@@ -30,22 +30,20 @@ public class MonaLisaApplication extends Application {
         mainAppFile.mkdir();
         Year year1 = new Year("2018", mainAppFile.toPath());
         year1.create();
-        Subject subject1 = new Subject("WDI", year1);
+        Subject subject1 = new Subject("WDI", year1.getPath());
         subject1.create();
         Lab lab1 = new Lab("Lab1", subject1);
         lab1.create();
-        Student student1 = new Student("Student1", lab1);
+        Student student1 = new Student("Student1", lab1.getPath());
         student1.create();
-        Assigment assigment1 = new Assigment("zad1", student1);
-        assigment1.create();
-        AssigmentFile assigmentFile1 = new AssigmentFile("main.py", assigment1);
-        assigmentFile1.create();
+        AssignmentFile assignmentFile1 = new AssignmentFile("main.py", student1.getPath());
+        assignmentFile1.create();
     }
 
     public static void main(String[] args) {
         String mainAppFilePath = System.getProperty("user.dir") + "\\MonaLisa";
         createExampleData(mainAppFilePath);
-        Loader.loadData(mainAppFilePath, null);
+//        Loader.loadData(mainAppFilePath, null);
         printFilesStructure(mainAppFilePath);
 
         MonaLisaApplication.launch(args);

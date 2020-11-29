@@ -1,24 +1,20 @@
 package pl.edu.agh.monalisa.model;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class Subject extends Package {
-    public String name;
-    private Collection<Lab> labs = new HashSet<>();
-    private Year year;
+    private Collection<Lab> labs;
 
-    public Subject(String name, Year year) {
-        super(name, year);
-        year.addSubject(this);
+    public Subject(String name, Path parent) {
+        super(name, parent);
+        this.labs = new HashSet<>();
     }
 
-    public Year getYear() {
-        return year;
-    }
-
-    public void setYear(Year year) {
-        this.year = year;
+    public Subject(String name, Path parent, Collection<Lab> labs) {
+        super(name, parent);
+        this.labs = labs;
     }
 
     public void addLab(Lab subject) {

@@ -4,8 +4,8 @@ import java.io.File;
 import java.nio.file.Path;
 
 public abstract class Package {
-    String name;
-    Path path;
+    private String name;
+    private Path path;
 
     public Package(String name, Path parentDirectoryPath) {
         this.name = name;
@@ -29,4 +29,8 @@ public abstract class Package {
     public void setName(String name) {
         this.name = name;
     } // w setName trzeba zrobić aby nazwa była edytowana na dysku
+
+    public Path getPath() {
+        return path;
+    }
 }

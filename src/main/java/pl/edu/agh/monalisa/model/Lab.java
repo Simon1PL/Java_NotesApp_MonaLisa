@@ -1,15 +1,20 @@
 package pl.edu.agh.monalisa.model;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class Lab extends Package {
-    private String name;
-    private Collection<Student> students = new HashSet<>();
+    private Collection<Student> students;
 
     public Lab(String name, Subject subject) {
         super(name, subject);
-        subject.addLab(this);
+        this.students = new HashSet<>();
+    }
+
+    public Lab(String name, Path parent, Collection<Student> students) {
+        super(name, parent);
+        this.students = students;
     }
 
     public void addStudent(Student student) {

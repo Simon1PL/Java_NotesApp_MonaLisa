@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import pl.edu.agh.monalisa.model.Loader;
 
+import java.nio.file.Path;
+
 public class MonaLisaController {
     private Loader loader;
 
@@ -15,7 +17,10 @@ public class MonaLisaController {
 
     @FXML
     public void initialize(){
-        System.out.println("qwe");
+
+        var model = loader.loadModel(Path.of("MonaLisa"));
+
+        System.out.println();
     }
 
 }

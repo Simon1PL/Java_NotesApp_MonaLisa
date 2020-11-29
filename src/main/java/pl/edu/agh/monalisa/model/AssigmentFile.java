@@ -6,7 +6,7 @@ import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions
 import java.util.Collection;
 import java.util.HashSet;
 
-public class AssigmentFile extends File {
+public class AssigmentFile extends GenericFile {
     private String name;
     private AvailableExtensions extension;
     private Collection<Note> notes = new HashSet<>();

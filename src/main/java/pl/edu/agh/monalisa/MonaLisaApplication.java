@@ -28,7 +28,7 @@ public class MonaLisaApplication extends Application {
     public static void createExampleData(String mainAppFilePath) {
         File mainAppFile = new File(mainAppFilePath);
         mainAppFile.mkdir();
-        Year year1 = new Year("2018", mainAppFile.getPath());
+        Year year1 = new Year("2018", mainAppFile.toPath());
         year1.create();
         Subject subject1 = new Subject("WDI", year1);
         subject1.create();

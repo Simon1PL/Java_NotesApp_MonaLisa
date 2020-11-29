@@ -6,11 +6,12 @@ import java.nio.file.Paths;
 
 public class Loader {
     public static void loadData(String rootPath, Package parentPackage) {
+
         try {
             Files.walk(Paths.get(rootPath), 1)
                     .forEach(path -> {
                         if (parentPackage == null) {
-                            Year loadedYear = new Year(path.getFileName().toString(), path.getParent().toString());
+                            Year loadedYear = new Year(path.getFileName().toString(), path.getParent());
                             loadData(path.toString(), loadedYear);
                         }
                         else if (parentPackage  instanceof Year) {

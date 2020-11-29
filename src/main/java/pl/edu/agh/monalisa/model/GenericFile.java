@@ -1,17 +1,18 @@
 package pl.edu.agh.monalisa.model;
 
+import java.io.File;
 import java.io.IOException;
 
-public abstract class File extends Package {
-    public File(String name, Package parentDirectory) {
+public abstract class GenericFile extends Package {
+    public GenericFile(String name, Package parentDirectory) {
         super(name, parentDirectory);
     }
 
     @Override
     public void create() {
-        java.io.File mainAppFile = new java.io.File(this.path);
+        File file = this.path.toFile();
         try {
-            mainAppFile.createNewFile();
+            file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }

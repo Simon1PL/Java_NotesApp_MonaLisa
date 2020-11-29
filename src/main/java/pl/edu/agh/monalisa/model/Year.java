@@ -1,27 +1,30 @@
 package pl.edu.agh.monalisa.model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 
 public class Year extends Package {
-    private final Collection<Subject> subjects;
+    private final ObservableList<Subject> subjects;
 
     public Year(String name, Path path) {
         super(name, path);
-        this.subjects = new HashSet<>();
+        this.subjects = FXCollections.observableArrayList();
     }
 
-    public Year(String name, Path parentDirectoryPath, Collection<Subject> subjects) {
+    public Year(String name, Path parentDirectoryPath, List<Subject> subjects) {
         super(name, parentDirectoryPath);
-        this.subjects = subjects;
+        this.subjects = FXCollections.observableList(subjects);
     }
 
     public void addSubject(Subject subject) {
         this.subjects.add(subject);
     }
 
-    public Collection<Subject> getSubjects() {
+    public ObservableList<Subject> getSubjects() {
         return subjects;
     }
 }

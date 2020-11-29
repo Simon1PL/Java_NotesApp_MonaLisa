@@ -1,12 +1,15 @@
 package pl.edu.agh.monalisa.model;
 
-import java.util.Set;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.util.List;
 
 public class Root {
-    private final Set<Year> years;
+    private final ObservableList<Year> years;
 
-    public Root(Set<Year> years) {
-        this.years = years;
+    public Root(List<Year> years) {
+        this.years = FXCollections.observableList(years);
     }
 
     public void addYear(Year year) {
@@ -17,7 +20,7 @@ public class Root {
         years.remove(year);
     }
 
-    public Set<Year> getYears() {
+    public ObservableList<Year> getYears() {
         return years;
     }
 }

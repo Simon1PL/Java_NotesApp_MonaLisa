@@ -1,6 +1,7 @@
 package pl.edu.agh.monalisa.controller;
 
 import com.google.inject.Inject;
+import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -31,6 +32,20 @@ public class MonaLisaController {
     @FXML
     public void initialize() {
         model = loader.loadModel(Path.of("MonaLisa"));
+
+        for (Year year : model.getYears()) {
+            for (Subject subject : year.getSubjects()) {
+                for (Lab lab : subject.getLabs()) {
+                    for (Student student : lab.getStudents()) {
+                        student.getAssignments().addListener((ListChangeListener<AssignmentFile>) c -> updateVisualization());
+                    }
+                    lab.getStudents().addListener((ListChangeListener<Student>) c -> updateVisualization());
+                }
+                subject.getLabs().addListener((ListChangeListener<Lab>) c -> updateVisualization());
+            }
+            year.getSubjects().addListener((ListChangeListener<Subject>) c -> updateVisualization());
+
+        }
 
         updateVisualization();
     }

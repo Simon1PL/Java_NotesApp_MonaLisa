@@ -19,7 +19,7 @@ public class Loader {
         var years = Arrays.stream(files)
                 .map(this::loadYear)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         root = new Root(years);
         return root;
@@ -32,7 +32,7 @@ public class Loader {
         var subjects = Arrays.stream(subjectFiles)
                 .map(this::loadSubject)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         return new Year(yearFile.getName(), yearFile.getParentFile().toPath(), subjects);
 
@@ -45,7 +45,7 @@ public class Loader {
         var labs = Arrays.stream(labFiles)
                 .map(this::loadLab)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         return new Subject(subjectFile.getName(), subjectFile.getParentFile().toPath(), labs);
     }
@@ -57,7 +57,7 @@ public class Loader {
         var students = Arrays.stream(studentFiles)
                 .map(this::loadStudent)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         return new Lab(labFile.getName(), labFile.getParentFile().toPath(), students);
     }
@@ -69,7 +69,7 @@ public class Loader {
         var students = Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
                 .map(file -> new AssignmentFile(file.getName(), studentFile.toPath()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         return new Student(studentFile.getName(), studentFile.getParentFile().toPath(), students);
     }

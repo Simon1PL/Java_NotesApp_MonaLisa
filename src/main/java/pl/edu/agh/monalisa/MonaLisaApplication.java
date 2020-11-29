@@ -1,5 +1,13 @@
 package pl.edu.agh.monalisa;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import pl.edu.agh.monalisa.guice.MonaLisaModule;
 import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
@@ -7,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class MonaLisaApplication {
+public class MonaLisaApplication extends Application {
     public static void printFilesStructure(String rootPath) {
         try {
             Files.walk(Paths.get(rootPath))
@@ -39,5 +47,21 @@ public class MonaLisaApplication {
         createExampleData(mainAppFilePath);
         Loader.loadData(mainAppFilePath, null);
         printFilesStructure(mainAppFilePath);
+
+        MonaLisaApplication.launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Injector injector = Guice.createInjector(new MonaLisaModule());
+        var fxmlLoader = new FXMLLoader();
+
+        fxmlLoader.setControllerFactory(injector::getInstance);
+
+        fxmlLoader.setLocation(MonaLisaApplication.class.getResource("view/monalisa.fxml"));
+        Parent parent = fxmlLoader.load();
+        primaryStage.setScene(new Scene(parent));
+        primaryStage.setTitle("MonaLisa");
+        primaryStage.show();
     }
 }

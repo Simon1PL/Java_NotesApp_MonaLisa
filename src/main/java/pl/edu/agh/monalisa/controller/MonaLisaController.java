@@ -1,13 +1,26 @@
 package pl.edu.agh.monalisa.controller;
 
 import com.google.inject.Inject;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import pl.edu.agh.monalisa.model.Loader;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
+import pl.edu.agh.monalisa.model.*;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MonaLisaController {
-    private Loader loader;
+    private final Loader loader;
+    private Root model;
+
+    @FXML
+    private Label infoText;
 
     @Inject
     public MonaLisaController(Loader loader) {
@@ -16,11 +29,35 @@ public class MonaLisaController {
 
 
     @FXML
-    public void initialize(){
+    public void initialize() {
+        model = loader.loadModel(Path.of("MonaLisa"));
 
-        var model = loader.loadModel(Path.of("MonaLisa"));
+        updateVisualization();
+    }
 
-        System.out.println();
+    private void updateVisualization() {
+        infoText.setText(getVisualizationString());
+    }
+
+    private String getVisualizationString() {
+        StringBuilder sb = new StringBuilder();
+        for (Year year : model.getYears()) {
+            sb.append("\n>").append(year.getName());
+
+            for (Subject subject : year.getSubjects()) {
+                sb.append("\n\t>").append(subject.getName());
+                for (Lab lab : subject.getLabs()) {
+                    sb.append("\n\t\t>").append(lab.getName());
+                    for (Student student : lab.getStudents()) {
+                        sb.append("\n\t\t\t>").append(student.getName());
+                        for (AssignmentFile assignment : student.getAssignments()) {
+                            sb.append("\n\t\t\t\t>").append(assignment.getName());
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 
 }

@@ -43,7 +43,6 @@ public class MonaLisaApplication extends Application {
     public static void main(String[] args) {
         String mainAppFilePath = System.getProperty("user.dir") + "\\MonaLisa";
         createExampleData(mainAppFilePath);
-//        Loader.loadData(mainAppFilePath, null);
         printFilesStructure(mainAppFilePath);
 
         MonaLisaApplication.launch(args);

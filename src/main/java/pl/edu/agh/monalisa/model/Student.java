@@ -21,7 +21,7 @@ public class Student extends Package {
         this.assignments.add(assigment);
     }
 
-    public Collection<AssignmentFile> getLabs() {
+    public Collection<AssignmentFile> getAssignments() {
         return assignments;
     }
 }

@@ -1,27 +1,27 @@
 package pl.edu.agh.monalisa.model;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class Student extends Package {
-    private String name;
-    private String surname;
-    private Collection<Assigment> assigments = new HashSet<>();
+    private final Collection<AssignmentFile> assignments;
 
-    public Student(String fileName, Lab lab) {
-        super(fileName, lab);
-        if (fileName.split(" ", 2).length == 2) {
-            this.name = fileName.split(" ", 2)[0];
-            this.surname = fileName.split(" ", 2)[1];
-        }
-        lab.addStudent(this);
+    public Student(String name, Path parentDirectoryPath, Collection<AssignmentFile> assignments) {
+        super(name, parentDirectoryPath);
+        this.assignments = assignments;
     }
 
-    public void addAssigment(Assigment assigment) {
-        this.assigments.add(assigment);
+    public Student(String fileName, Path parent) {
+        super(fileName, parent);
+        this.assignments = new HashSet<>();
     }
 
-    public Collection<Assigment> getLabs() {
-        return assigments;
+    public void addAssigment(AssignmentFile assigment) {
+        this.assignments.add(assigment);
+    }
+
+    public Collection<AssignmentFile> getLabs() {
+        return assignments;
     }
 }

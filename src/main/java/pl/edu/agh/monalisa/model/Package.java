@@ -1,23 +1,24 @@
 package pl.edu.agh.monalisa.model;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public abstract class Package {
-    String name;
-    String path;
+    private String name;
+    private Path path;
 
-    public Package(String name, String parentDirectoryPath) {
+    public Package(String name, Path parentDirectoryPath) {
         this.name = name;
-        this.path = parentDirectoryPath + "\\" + this.name;
+        this.path = parentDirectoryPath.resolve(Path.of(this.name));
     }
 
     public Package(String name, Package parentDirectory) {
         this.name = name;
-        this.path = parentDirectory.path + "\\" + this.name;
+        this.path = parentDirectory.path.resolve(Path.of(this.name));
     }
 
     public void create() {
-        File mainAppFile = new File(this.path);
+        File mainAppFile = this.path.toFile();
         mainAppFile.mkdir();
     }
 
@@ -28,4 +29,8 @@ public abstract class Package {
     public void setName(String name) {
         this.name = name;
     } // w setName trzeba zrobić aby nazwa była edytowana na dysku
+
+    public Path getPath() {
+        return path;
+    }
 }

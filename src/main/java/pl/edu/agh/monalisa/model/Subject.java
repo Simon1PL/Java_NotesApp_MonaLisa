@@ -3,13 +3,14 @@ package pl.edu.agh.monalisa.model;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Subject {
+public class Subject extends Package {
     public String name;
     private Collection<Lab> labs = new HashSet<>();
     private Year year;
 
-    public Subject(String name) {
-        this.name = name;
+    public Subject(String name, Year year) {
+        super(name, year);
+        year.addSubject(this);
     }
 
     public Year getYear() {

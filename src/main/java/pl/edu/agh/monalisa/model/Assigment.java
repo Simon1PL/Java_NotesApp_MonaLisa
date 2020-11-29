@@ -3,13 +3,14 @@ package pl.edu.agh.monalisa.model;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Assigment {
+public class Assigment extends Package {
     private String name;
     private Collection<Note> notes = new HashSet<>();
     private Collection<AssigmentFile> assigmentFiles = new HashSet<>();
 
-    public Assigment(String name) {
-        this.name = name;
+    public Assigment(String name, Student student) {
+        super(name, student);
+        student.addAssigment(this);
     }
 
     public Collection<Note> getNotes() {

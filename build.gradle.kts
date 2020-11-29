@@ -16,4 +16,5 @@ java {
 
 dependencies {
     testImplementation("junit", "junit", "4.12")
+    implementation("com.google.code.gson:gson:2.8.6")
 }

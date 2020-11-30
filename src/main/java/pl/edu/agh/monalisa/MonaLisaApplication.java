@@ -11,19 +11,8 @@ import pl.edu.agh.monalisa.guice.MonaLisaModule;
 import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class MonaLisaApplication extends Application {
-    public static void printFilesStructure(String rootPath) {
-        try {
-            Files.walk(Paths.get(rootPath))
-                    .forEach(path -> System.out.println(path.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void createExampleData(String mainAppFilePath) {
         File mainAppFile = new File(mainAppFilePath);
@@ -43,7 +32,6 @@ public class MonaLisaApplication extends Application {
     public static void main(String[] args) {
         String mainAppFilePath = System.getProperty("user.dir") + "\\MonaLisa";
         createExampleData(mainAppFilePath);
-        printFilesStructure(mainAppFilePath);
 
         MonaLisaApplication.launch(args);
     }

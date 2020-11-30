@@ -9,7 +9,10 @@ public abstract class Package {
 
     public Package(String name, Path parentDirectoryPath) {
         this.name = name;
-        this.path = parentDirectoryPath.resolve(Path.of(this.name));
+        if (parentDirectoryPath == null)
+            path = Path.of(this.name);
+        else
+            this.path = parentDirectoryPath.resolve(Path.of(this.name));
     }
 
     public Package(String name, Package parentDirectory) {

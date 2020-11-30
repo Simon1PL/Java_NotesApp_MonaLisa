@@ -3,12 +3,14 @@ package pl.edu.agh.monalisa.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.nio.file.Path;
 import java.util.List;
 
-public class Root {
+public class Root extends Package {
     private final ObservableList<Year> years;
 
-    public Root(List<Year> years) {
+    public Root(String name, Path parent, List<Year> years) {
+        super(name, parent);
         this.years = FXCollections.observableList(years);
     }
 

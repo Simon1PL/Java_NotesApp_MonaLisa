@@ -18,6 +18,11 @@ public class Root extends Package {
         years.add(year);
     }
 
+    @Override
+    public ObservableList<? extends Package> getChildren() {
+        return getYears();
+    }
+
     public void removeYear(Year year) {
         years.remove(year);
     }

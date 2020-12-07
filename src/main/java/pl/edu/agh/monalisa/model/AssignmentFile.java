@@ -1,5 +1,6 @@
 package pl.edu.agh.monalisa.model;
 
+import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
 
@@ -14,5 +15,10 @@ public class AssignmentFile extends GenericFile {
     public AssignmentFile(String name, Path parent) {
         super(name, parent);
         this.extension = AvailableExtensionsEnum.getExtension(name);
+    }
+
+    @Override
+    public ObservableList<? extends Package> getChildren() {
+        return null;
     }
 }

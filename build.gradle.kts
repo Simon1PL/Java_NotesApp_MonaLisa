@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://dl.bintray.com/speljohan/rxjavafx-mirror")
 }
 
 application {
@@ -29,4 +30,6 @@ dependencies {
     testImplementation("junit", "junit", "4.12")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.inject:guice:4.2.3")
+    implementation("io.reactivex.rxjava3:rxjava:3.0.8")
+    implementation("io.reactivex.rxjava3:rxjavafx:3.0.1")
 }

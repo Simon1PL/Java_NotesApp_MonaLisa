@@ -20,6 +20,11 @@ public class Student extends Package {
         this.assignments = FXCollections.observableArrayList();
     }
 
+    @Override
+    public ObservableList<? extends Package> getChildren() {
+        return getAssignments();
+    }
+
     public void addAssigment(AssignmentFile assigment) {
         this.assignments.add(assigment);
     }

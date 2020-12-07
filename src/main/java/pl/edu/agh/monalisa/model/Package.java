@@ -1,5 +1,8 @@
 package pl.edu.agh.monalisa.model;
 
+import javafx.collections.ObservableList;
+
+import java.io.File;
 import java.nio.file.Path;
 
 public abstract class Package {
@@ -20,11 +23,8 @@ public abstract class Package {
     }
 
     public void create() {
-        this.path.toFile().mkdir();
-    }
-
-    public void delete() {
-        this.path.toFile().delete();
+        File mainAppFile = this.path.toFile();
+        mainAppFile.mkdir();
     }
 
     public String getName() {
@@ -38,4 +38,6 @@ public abstract class Package {
     public Path getPath() {
         return path;
     }
+
+    public abstract ObservableList<? extends Package> getChildren();
 }

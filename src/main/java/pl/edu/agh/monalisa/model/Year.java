@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 
 public class Year extends Package {
@@ -18,6 +17,11 @@ public class Year extends Package {
     public Year(String name, Path parentDirectoryPath, List<Subject> subjects) {
         super(name, parentDirectoryPath);
         this.subjects = FXCollections.observableList(subjects);
+    }
+
+    @Override
+    public ObservableList<? extends Package> getChildren() {
+        return getSubjects();
     }
 
     public void addSubject(Subject subject) {

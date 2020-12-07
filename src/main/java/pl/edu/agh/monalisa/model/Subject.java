@@ -20,6 +20,11 @@ public class Subject extends Package {
         this.labs = FXCollections.observableList(labs);
     }
 
+    @Override
+    public ObservableList<? extends Package> getChildren() {
+        return getLabs();
+    }
+
     public void addLab(Lab subject) {
         this.labs.add(subject);
     }

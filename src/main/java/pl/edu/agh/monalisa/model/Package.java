@@ -1,6 +1,5 @@
 package pl.edu.agh.monalisa.model;
 
-import java.io.File;
 import java.nio.file.Path;
 
 public abstract class Package {
@@ -21,8 +20,11 @@ public abstract class Package {
     }
 
     public void create() {
-        File mainAppFile = this.path.toFile();
-        mainAppFile.mkdir();
+        this.path.toFile().mkdir();
+    }
+
+    public void delete() {
+        this.path.toFile().delete();
     }
 
     public String getName() {

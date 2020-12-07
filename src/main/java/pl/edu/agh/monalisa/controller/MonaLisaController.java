@@ -2,10 +2,14 @@ package pl.edu.agh.monalisa.controller;
 
 import com.google.inject.Inject;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import pl.edu.agh.monalisa.model.*;
 import pl.edu.agh.monalisa.loader.Loader;
+import pl.edu.agh.monalisa.model.Package;
 
 import java.nio.file.Path;
 
@@ -14,7 +18,9 @@ public class MonaLisaController {
     private Root model;
 
     @FXML
-    private Label infoText;
+    private TreeView<String> fileTree;
+
+    private TreeItem<String> fileTreeRoot;
 
     @Inject
     public MonaLisaController(Loader loader) {
@@ -25,51 +31,61 @@ public class MonaLisaController {
     @FXML
     public void initialize() {
         model = loader.loadModel(Path.of("MonaLisa"));
+        fileTreeRoot = new TreeItem<>();
+        fileTree.setRoot(fileTreeRoot);
+        fileTree.setShowRoot(false);
 
-        //temporary demonstration code
         for (Year year : model.getYears()) {
+            var yearItem = addTreeItem(fileTreeRoot, year);
+            addListener(yearItem, year);
             for (Subject subject : year.getSubjects()) {
+                var subjectItem = addTreeItem(yearItem, subject);
+                addListener(subjectItem, subject);
                 for (Lab lab : subject.getLabs()) {
+                    var labItem = addTreeItem(subjectItem, lab);
+                    addListener(labItem, lab);
                     for (Student student : lab.getStudents()) {
-                        student.getAssignments().addListener((ListChangeListener<AssignmentFile>) c -> updateVisualization());
-                    }
-                    lab.getStudents().addListener((ListChangeListener<Student>) c -> updateVisualization());
-                }
-                subject.getLabs().addListener((ListChangeListener<Lab>) c -> updateVisualization());
-            }
-            year.getSubjects().addListener((ListChangeListener<Subject>) c -> updateVisualization());
-        }
-        model.getYears().addListener((ListChangeListener<Year>) c -> updateVisualization());
+                        var studentItem = addTreeItem(labItem, student);
+                        addListener(studentItem, student);
 
-
-        updateVisualization();
-    }
-
-    private void updateVisualization() {
-        infoText.setText(getVisualizationString());
-    }
-
-
-    //temporary demonstration code
-    private String getVisualizationString() {
-        StringBuilder sb = new StringBuilder();
-        for (Year year : model.getYears()) {
-            sb.append("\n>").append(year.getName());
-
-            for (Subject subject : year.getSubjects()) {
-                sb.append("\n\t>").append(subject.getName());
-                for (Lab lab : subject.getLabs()) {
-                    sb.append("\n\t\t>").append(lab.getName());
-                    for (Student student : lab.getStudents()) {
-                        sb.append("\n\t\t\t>").append(student.getName());
-                        for (AssignmentFile assignment : student.getAssignments()) {
-                            sb.append("\n\t\t\t\t>").append(assignment.getName());
-                        }
+                        for (AssignmentFile assignmentFile : student.getAssignments())
+                            addTreeItem(studentItem, assignmentFile);
                     }
                 }
             }
+
         }
-        return sb.toString();
+        model.getYears().addListener((ListChangeListener<Year>) c -> updateTree(null, c));
+
+
+    }
+
+    private void updateTree(TreeItem<String> parent, ListChangeListener.Change<? extends Package> change) {
+        if (parent == null) parent = fileTreeRoot;
+        while (change.next())
+            if (change.wasAdded()) {
+                TreeItem<String> finalParent = parent;
+                change.getAddedSubList().forEach(pkg -> {
+                    var newTreeItem = addTreeItem(finalParent, pkg);
+                    if (pkg.getChildren() != null)
+                        addListener(newTreeItem, pkg);
+                });
+            } else if (change.wasRemoved()) {
+                TreeItem<String> finalParent1 = parent;
+                change.getRemoved().forEach(pkg -> {
+                    finalParent1.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg.getName()));
+                });
+            }
+    }
+
+    private void addListener(TreeItem<String> parent, Package pkg) {
+        pkg.getChildren().addListener((ListChangeListener<Package>) c -> updateTree(parent, c));
+    }
+
+    private TreeItem<String> addTreeItem(TreeItem<String> parent, Package item) {
+        var newItem = new TreeItem<>(item.getName());
+        parent.getChildren().add(newItem);
+        return newItem;
     }
 
 }

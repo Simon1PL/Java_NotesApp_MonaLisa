@@ -104,7 +104,6 @@ public class Loader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
-                    System.out.println("event");
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
                         lab.addStudent(loadStudent(event.getTarget().toFile()));
                     else lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));

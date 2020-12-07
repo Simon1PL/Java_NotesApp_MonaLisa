@@ -1,21 +1,17 @@
 package pl.edu.agh.monalisa.model;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PackageTest {
     private static final String packageName = "MonaLisaTest";
-    private static final Package newPackage = new Package(packageName, Path.of(System.getProperty("user.dir"))) { };
-
-    @BeforeClass
-    public static void beforeAll() {
-    }
+    private static final Package newPackage = new Year(packageName, Path.of(System.getProperty("user.dir"))) { };
 
     @Test
     public void getName() {
@@ -34,13 +30,13 @@ public class PackageTest {
         assertTrue(file.exists() && file.isDirectory());
     }
 
-    @Test
-    public void delete() {
-        newPackage.delete();
-        assertFalse(newPackage.getPath().toFile().exists());
-    }
+//    @Test
+//    public void delete() {
+//        newPackage.delete();
+//        assertFalse(newPackage.getPath().toFile().exists());
+//    }
 
-    @AfterClass
+    @AfterAll
     public static void afterAll() {
         newPackage.getPath().toFile().delete();
     }

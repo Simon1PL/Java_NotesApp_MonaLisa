@@ -26,8 +26,13 @@ javafx {
     modules = listOf("javafx.base", "javafx.controls", "javafx.fxml")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 dependencies {
-    testImplementation("junit", "junit", "4.12")
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("org.junit.jupiter", "junit-jupiter", "5.4.2")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.inject:guice:4.2.3")
     implementation("io.reactivex.rxjava3:rxjava:3.0.8")

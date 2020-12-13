@@ -1,10 +1,11 @@
 package pl.edu.agh.monalisa.controller;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import pl.edu.agh.monalisa.model.*;
@@ -14,29 +15,36 @@ import pl.edu.agh.monalisa.model.Package;
 import java.nio.file.Path;
 
 public class MonaLisaController {
+    @Inject @Named("RootPath")
+    private Path rootPath;
+
     private final Loader loader;
     private Root model;
+    private AssignmentFile selectedFile;
+    private int notesAmount = 1; //Do wywalenia potem
 
     @FXML
-    private TreeView<String> fileTree;
+    private TreeView<Package> fileTree;
 
-    private TreeItem<String> fileTreeRoot;
+    @FXML
+    private TextArea file;
+
+    @FXML
+    private Button addNoteButton;
 
     @Inject
     public MonaLisaController(Loader loader) {
         this.loader = loader;
     }
 
-
     @FXML
     public void initialize() {
-        model = loader.loadModel(Path.of("MonaLisa"));
-        fileTreeRoot = new TreeItem<>();
-        fileTree.setRoot(fileTreeRoot);
+        model = loader.loadModel(this.rootPath);
+        fileTree.setRoot(new TreeItem<>(model));
         fileTree.setShowRoot(false);
 
         for (Year year : model.getYears()) {
-            var yearItem = addTreeItem(fileTreeRoot, year);
+            TreeItem<Package> yearItem = addTreeItem(fileTree.getRoot(), year);
             addListener(yearItem, year);
             for (Subject subject : year.getSubjects()) {
                 var subjectItem = addTreeItem(yearItem, subject);
@@ -53,39 +61,44 @@ public class MonaLisaController {
                     }
                 }
             }
-
         }
-        model.getYears().addListener((ListChangeListener<Year>) c -> updateTree(null, c));
 
+        fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.getValue() instanceof AssignmentFile) {
+                this.file.setText(((AssignmentFile) newValue.getValue()).getText());
+                this.selectedFile = (AssignmentFile) newValue.getValue();
+            }
+        });
 
+        addNoteButton.setOnAction((actionEvent) -> {
+            if (this.selectedFile != null) this.selectedFile.addNote(new Note(this.notesAmount++, "title", "NOTE"));
+        });
     }
 
-    private void updateTree(TreeItem<String> parent, ListChangeListener.Change<? extends Package> change) {
-        if (parent == null) parent = fileTreeRoot;
+    private void updateTree(TreeItem<Package> parent, ListChangeListener.Change<? extends Package> change) {
         while (change.next())
             if (change.wasAdded()) {
-                TreeItem<String> finalParent = parent;
+                TreeItem<Package> finalParent = parent;
                 change.getAddedSubList().forEach(pkg -> {
                     var newTreeItem = addTreeItem(finalParent, pkg);
                     if (pkg.getChildren() != null)
                         addListener(newTreeItem, pkg);
                 });
             } else if (change.wasRemoved()) {
-                TreeItem<String> finalParent1 = parent;
+                TreeItem<Package> finalParent1 = parent;
                 change.getRemoved().forEach(pkg -> {
                     finalParent1.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg.getName()));
                 });
             }
     }
 
-    private void addListener(TreeItem<String> parent, Package pkg) {
+    private void addListener(TreeItem<Package> parent, Package pkg) {
         pkg.getChildren().addListener((ListChangeListener<Package>) c -> updateTree(parent, c));
     }
 
-    private TreeItem<String> addTreeItem(TreeItem<String> parent, Package item) {
-        var newItem = new TreeItem<>(item.getName());
+    private TreeItem<Package> addTreeItem(TreeItem<Package> parent, Package item) {
+        var newItem = new TreeItem<>(item);
         parent.getChildren().add(newItem);
         return newItem;
     }
-
 }

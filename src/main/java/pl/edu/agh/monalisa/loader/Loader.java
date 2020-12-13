@@ -2,6 +2,7 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import pl.edu.agh.monalisa.model.*;
@@ -22,7 +23,8 @@ public class Loader {
         this.filesystemListener = filesystemListener;
     }
 
-    public Root loadModel(Path rootPath) {
+    @Inject
+    public Root loadModel(@Named("RootPath") Path rootPath) {
         var files = rootPath.toFile().listFiles();
         if (files == null) throw new IllegalArgumentException("Root path must be a directory");
 
@@ -117,6 +119,7 @@ public class Loader {
 
         var students = Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
+                .filter(file -> !file.toString().endsWith(".json"))
                 .map(file -> new AssignmentFile(file.getName(), studentFile.toPath()))
                 .collect(Collectors.toList());
 

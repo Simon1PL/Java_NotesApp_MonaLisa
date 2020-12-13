@@ -39,5 +39,30 @@ public abstract class Package {
         return path;
     }
 
+    public void delete() {
+        File[] files = this.path.toFile().listFiles();
+        if(files != null) {
+            for (final File file : files) {
+                deleteRecursive(file);
+            }
+        }
+        this.path.toFile().delete();
+    }
+
+    private void deleteRecursive(File dir) {
+        File[] files = dir.listFiles();
+        if(files != null) {
+            for (final File file : files) {
+                deleteRecursive(file);
+            }
+        }
+        dir.delete();
+    }
+
     public abstract ObservableList<? extends Package> getChildren();
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
 }

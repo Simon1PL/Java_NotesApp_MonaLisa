@@ -9,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashSet;
 
 public class AssignmentFile extends GenericFile {
     private AvailableExtensions extension;
@@ -21,11 +19,7 @@ public class AssignmentFile extends GenericFile {
     public AssignmentFile(String name, Path parent) {
         super(name, parent);
         this.extension = AvailableExtensionsEnum.getExtension(name);
-        try {
-            this.text = this.getPath().toFile().exists() ? Files.readString(this.getPath()) : "";
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.loadTextFromFile();
         this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
         try {
             if (this.notesPath.toFile().exists()) {
@@ -38,6 +32,14 @@ public class AssignmentFile extends GenericFile {
 
     public String getText() {
         return text;
+    }
+
+    public void loadTextFromFile() {
+        try {
+            this.text = this.getPath().toFile().exists() ? Files.readString(this.getPath()) : "";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

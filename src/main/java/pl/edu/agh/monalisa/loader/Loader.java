@@ -130,10 +130,13 @@ public class Loader {
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        var assignmentFile = event.getTarget().toFile();
+                        File assignmentFile = event.getTarget().toFile();
                         student.addAssigment(new AssignmentFile(assignmentFile.getName(), assignmentFile.getParentFile().toPath()));
-                    } else
+                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
                         student.getAssignments().removeIf(a -> a.getPath().equals(event.getTarget()));
+                    } else {
+                        student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
+                    }
                 });
 
         return student;

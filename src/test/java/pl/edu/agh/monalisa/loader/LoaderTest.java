@@ -79,7 +79,7 @@ public class LoaderTest {
 
         model.getPath().resolve("2019").toFile().mkdir();
 
-        assertEquals(model.getYears().size(), 1);
+        assertEquals(2, model.getYears().size());
     }
 
     public void modelUpdatesOnFileDeleted(){

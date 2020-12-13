@@ -15,11 +15,6 @@ public class MonaLisaModule extends AbstractModule {
     public FilesystemWatcher provideFilesystemListener() {
         return new FilesystemWatcher();
     }
-    // Jak działa to wyżej, bo ja bym to zrobił tak, a ta funkcja wyzej nie jest nigdzie wywolana?
-    //    @Override
-    //    protected void configure() {
-    //        bind(FilesystemWatcher.class).in(Singleton.class);
-    //    }
 
     @Override
     protected void configure() {

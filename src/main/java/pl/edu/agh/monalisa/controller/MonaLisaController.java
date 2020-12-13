@@ -78,16 +78,14 @@ public class MonaLisaController {
     private void updateTree(TreeItem<Package> parent, ListChangeListener.Change<? extends Package> change) {
         while (change.next())
             if (change.wasAdded()) {
-                TreeItem<Package> finalParent = parent;
                 change.getAddedSubList().forEach(pkg -> {
-                    var newTreeItem = addTreeItem(finalParent, pkg);
+                    var newTreeItem = addTreeItem(parent, pkg);
                     if (pkg.getChildren() != null)
                         addListener(newTreeItem, pkg);
                 });
             } else if (change.wasRemoved()) {
-                TreeItem<Package> finalParent1 = parent;
                 change.getRemoved().forEach(pkg -> {
-                    finalParent1.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg.getName()));
+                    parent.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg));
                 });
             }
     }

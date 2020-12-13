@@ -20,7 +20,7 @@ import java.nio.file.Path;
 public class MonaLisaApplication extends Application {
 
     public static void main(String[] args) {
-        MonaLisaApplication.launch(args); //To odpala start()?
+        MonaLisaApplication.launch(args);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class MonaLisaApplication extends Application {
         }
 
         var fxmlLoader = new FXMLLoader();
-        fxmlLoader.setControllerFactory(injector::getInstance); //To dodaje guicea do javyfx?
+        fxmlLoader.setControllerFactory(injector::getInstance);
 
         fxmlLoader.setLocation(MonaLisaApplication.class.getResource("view/monalisa.fxml"));
         Parent parent = fxmlLoader.load();

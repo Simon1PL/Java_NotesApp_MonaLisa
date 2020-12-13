@@ -65,8 +65,8 @@ public class MonaLisaController {
 
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                this.file.setText(((AssignmentFile) newValue.getValue()).getText());
                 this.selectedFile = (AssignmentFile) newValue.getValue();
+                this.file.setText(selectedFile.getName() + "\n" + selectedFile.getText());
             }
         });
 

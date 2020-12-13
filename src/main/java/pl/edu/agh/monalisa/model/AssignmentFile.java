@@ -46,33 +46,17 @@ public class AssignmentFile extends GenericFile {
     }
 
     public void addNote(Note note) {
-        Collection<Note> notesTmp = this.notes.getNotes();
-        if (notesTmp.stream().anyMatch(n -> n.getLine() == note.getLine())) {
-            try {
-                throw new Exception();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        notesTmp.add(note);
-        this.notes.setNotes(notesTmp);
+        this.notes.addNote(note);
         this.saveNotes();
     }
 
     public void removeNote(Note note) {
-        Collection<Note> notesTmp = this.notes.getNotes();
-        Note removedNote = notesTmp.stream().filter(n -> n.getLine() == note.getLine()).findFirst().get();
-        notesTmp.remove(removedNote);
-        this.notes.setNotes(notesTmp);
+        this.notes.removeNote(note);
         this.saveNotes();
     }
 
     public void editNote(Note note) {
-        Collection<Note> notesTmp = this.notes.getNotes();
-        Note editedNote = notesTmp.stream().filter(n -> n.getLine() == note.getLine()).findFirst().get();
-        notesTmp.remove(editedNote);
-        notesTmp.add(note);
-        this.notes.setNotes(notesTmp);
+        this.notes.editNote(note);
         this.saveNotes();
     }
 

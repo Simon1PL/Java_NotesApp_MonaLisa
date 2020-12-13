@@ -13,6 +13,8 @@ import pl.edu.agh.monalisa.guice.MonaLisaModule;
 import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class MonaLisaApplication extends Application {
@@ -57,5 +59,12 @@ public class MonaLisaApplication extends Application {
         student1.create();
         AssignmentFile assignmentFile1 = new AssignmentFile("main.py", student1.getPath());
         assignmentFile1.create();
+        try {
+            FileWriter fileWriter = new FileWriter(assignmentFile1.getPath().toFile());
+            fileWriter.write("first line\nnext line");
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

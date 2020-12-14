@@ -17,7 +17,7 @@ public class FilesystemWatcher {
     public Observable<FileSystemEvent> register(Package pkg, FileType fileType) {
         return Observable.create(subscriber -> {
             try (WatchService watcher = pkg.getPath().getFileSystem().newWatchService()) {
-                pkg.getPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE);
+                pkg.getPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
                 while (!subscriber.isDisposed()) {
                     WatchKey key = watcher.take();
@@ -28,6 +28,9 @@ public class FilesystemWatcher {
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
                         else if (event.kind() == ENTRY_DELETE)
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.DELETED));
+                        else if (event.kind() == ENTRY_MODIFY) {
+                            subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.MODIFIED));
+                        }
                     }
                     if (!key.reset()) break;
                 }

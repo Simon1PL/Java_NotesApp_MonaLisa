@@ -37,4 +37,5 @@ dependencies {
     implementation("com.google.inject:guice:4.2.3")
     implementation("io.reactivex.rxjava3:rxjava:3.0.8")
     implementation("io.reactivex.rxjava3:rxjavafx:3.0.1")
+    implementation("org.fxmisc.richtext:richtextfx:0.10.5")
 }

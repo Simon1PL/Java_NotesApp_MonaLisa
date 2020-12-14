@@ -3,12 +3,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import org.fxmisc.richtext.CodeArea?>
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
    <children>
       <TreeView fx:id="fileTree" prefHeight="400.0" prefWidth="193.0" />
       <VBox prefHeight="400.0" maxWidth="Infinity" HBox.hgrow="ALWAYS">
          <children>
-            <TextArea fx:id="fileView" disable="true" prefHeight="332.0" maxWidth="Infinity" />
+            <CodeArea fx:id="fileView" disable="true" prefHeight="332.0" maxWidth="Infinity" />
             <Button fx:id="addNoteButton" mnemonicParsing="false" text="Button" />
          </children>
       </VBox>

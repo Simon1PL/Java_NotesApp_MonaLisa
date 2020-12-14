@@ -36,19 +36,19 @@ public class FilesystemWatcher {
         });
     }
 
-    public void openAssignmentFile(AssignmentFile file) {
+    public Observable<String> openAssignmentFile(AssignmentFile file) {
         Path parent = file.getPath().getParent();
-        Observable<FileContentEvent> observable = Observable.create(subscriber -> {
+        Observable<String> observable = Observable.create(subscriber -> {
             try (WatchService watcher = parent.getFileSystem().newWatchService()) {
                 parent.register(watcher, ENTRY_MODIFY);
-                subscriber.onNext(new FileContentEvent(Files.readString(file.getPath())));
+                subscriber.onNext(Files.readString(file.getPath()));
 
                 while (!subscriber.isDisposed()) {
                     WatchKey key = watcher.take();
                     for (WatchEvent<?> event : key.pollEvents()) {
                         var targetPath = parent.resolve((Path) event.context());
                         if (event.kind() == ENTRY_MODIFY && targetPath.equals(file.getPath()))
-                            subscriber.onNext(new FileContentEvent(Files.readString(file.getPath())));
+                            subscriber.onNext(Files.readString(file.getPath()));
                     }
                     if (!key.reset()) break;
                 }
@@ -57,9 +57,8 @@ public class FilesystemWatcher {
             } catch (InterruptedException ignored) {
             }
         });
-        file.setFileContentListener(observable.subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> file.contentProperty().setValue(event.getFileContent())));
+        return observable.subscribeOn(Schedulers.io())
+                .observeOn(JavaFxScheduler.platform());
     }
 
     public void closeAssignmentFile(AssignmentFile file) {

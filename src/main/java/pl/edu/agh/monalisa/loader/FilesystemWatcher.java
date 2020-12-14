@@ -1,16 +1,15 @@
 package pl.edu.agh.monalisa.loader;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import pl.edu.agh.monalisa.model.AssignmentFile;
 import pl.edu.agh.monalisa.model.Package;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 
 public class FilesystemWatcher {
@@ -26,7 +25,7 @@ public class FilesystemWatcher {
                         var targetPath = pkg.getPath().resolve((Path) event.context());
                         if (event.kind() == ENTRY_CREATE && fileType == FileType.fromFile(targetPath.toFile()))
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
-                        else if(event.kind() == ENTRY_DELETE)
+                        else if (event.kind() == ENTRY_DELETE)
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.DELETED));
                     }
                     if (!key.reset()) break;
@@ -35,6 +34,38 @@ public class FilesystemWatcher {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void openAssignmentFile(AssignmentFile file) {
+        Path parent = file.getPath().getParent();
+        Observable<FileContentEvent> observable = Observable.create(subscriber -> {
+            try (WatchService watcher = parent.getFileSystem().newWatchService()) {
+                parent.register(watcher, ENTRY_MODIFY);
+                subscriber.onNext(new FileContentEvent(Files.readString(file.getPath())));
+
+                while (!subscriber.isDisposed()) {
+                    WatchKey key = watcher.take();
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        var targetPath = parent.resolve((Path) event.context());
+                        if (event.kind() == ENTRY_MODIFY && targetPath.equals(file.getPath()))
+                            subscriber.onNext(new FileContentEvent(Files.readString(file.getPath())));
+                    }
+                    if (!key.reset()) break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException ignored) {
+            }
+        });
+        file.setFileContentListener(observable.subscribeOn(Schedulers.io())
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(event -> file.contentProperty().setValue(event.getFileContent())));
+    }
+
+    public void closeAssignmentFile(AssignmentFile file) {
+        if (file.getFileContentListener() != null)
+            file.getFileContentListener().dispose();
+        //TODO delete watcher
     }
 
 }

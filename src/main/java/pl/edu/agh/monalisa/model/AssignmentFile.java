@@ -1,9 +1,15 @@
 package pl.edu.agh.monalisa.model;
 
 import com.google.gson.Gson;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
+import pl.edu.agh.monalisa.loader.FileContentEvent;
+import pl.edu.agh.monalisa.loader.FileSystemEvent;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,12 +21,15 @@ public class AssignmentFile extends GenericFile {
     private Notes notes = new Notes();
     private String text;
     private Path notesPath;
+    private Disposable fileContentListener;
+    private StringProperty content;
 
     public AssignmentFile(String name, Path parent) {
         super(name, parent);
         this.extension = AvailableExtensionsEnum.getExtension(name);
         this.loadTextFromFile();
         this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
+        this.content = new SimpleStringProperty();
         try {
             if (this.notesPath.toFile().exists()) {
                 this.notes = new Gson().fromJson(Files.readString(this.notesPath), Notes.class);
@@ -73,5 +82,21 @@ public class AssignmentFile extends GenericFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Disposable getFileContentListener() {
+        return fileContentListener;
+    }
+
+    public void setFileContentListener(Disposable fileContentListener) {
+        this.fileContentListener = fileContentListener;
+    }
+
+    public StringProperty contentProperty() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content.set(content);
     }
 }

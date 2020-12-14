@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import pl.edu.agh.monalisa.loader.FilesystemWatcher;
 import pl.edu.agh.monalisa.model.*;
 import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.Package;
@@ -15,10 +16,12 @@ import pl.edu.agh.monalisa.model.Package;
 import java.nio.file.Path;
 
 public class MonaLisaController {
-    @Inject @Named("RootPath")
+    @Inject
+    @Named("RootPath")
     private Path rootPath;
 
     private final Loader loader;
+    private final FilesystemWatcher watcher;
     private Root model;
     private AssignmentFile selectedFile;
     private int notesAmount = 1; //Do wywalenia potem
@@ -27,14 +30,15 @@ public class MonaLisaController {
     private TreeView<Package> fileTree;
 
     @FXML
-    private TextArea file;
+    private TextArea fileView;
 
     @FXML
     private Button addNoteButton;
 
     @Inject
-    public MonaLisaController(Loader loader) {
+    public MonaLisaController(Loader loader, FilesystemWatcher watcher) {
         this.loader = loader;
+        this.watcher = watcher;
     }
 
     @FXML
@@ -65,8 +69,11 @@ public class MonaLisaController {
 
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
+                if (this.selectedFile != null)
+                    watcher.closeAssignmentFile(this.selectedFile);
                 this.selectedFile = (AssignmentFile) newValue.getValue();
-                this.file.setText(selectedFile.getName() + "\n" + selectedFile.getText());
+                watcher.openAssignmentFile(this.selectedFile);
+                this.fileView.textProperty().bind(this.selectedFile.contentProperty());
             }
         });
 

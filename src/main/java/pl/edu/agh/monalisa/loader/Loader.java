@@ -10,6 +10,8 @@ import pl.edu.agh.monalisa.model.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,7 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
                         root.addYear(loadYear(event.getTarget().toFile()));
-                    else
+                    else if (event.getKind() == FileSystemEvent.EventKind.DELETED)
                         root.getYears().removeIf(y -> y.getPath().equals(event.getTarget()));
                 });
         return root;
@@ -49,9 +51,10 @@ public class Loader {
 
     private Year loadYear(File yearFile) {
         var subjectFiles = yearFile.listFiles();
-        if (subjectFiles == null) return null;
 
-        var subjects = Arrays.stream(subjectFiles)
+        if (subjectFiles == null) return new Year(yearFile.getName(), yearFile.getParentFile().toPath(), new LinkedList<>());
+
+        List<Subject> subjects = Arrays.stream(subjectFiles)
                 .map(this::loadSubject)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -64,7 +67,8 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
                         year.addSubject(loadSubject(event.getTarget().toFile()));
-                    else year.getSubjects().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    else if (event.getKind() == FileSystemEvent.EventKind.DELETED)
+                        year.getSubjects().removeIf(s -> s.getPath().equals(event.getTarget()));
                 });
         return year;
     }
@@ -87,7 +91,8 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
                         subject.addLab(loadLab(event.getTarget().toFile()));
-                    else subject.getLabs().removeIf(l -> l.getPath().equals(event.getTarget()));
+                    else if (event.getKind() == FileSystemEvent.EventKind.DELETED)
+                        subject.getLabs().removeIf(l -> l.getPath().equals(event.getTarget()));
                 });
         return subject;
     }
@@ -108,7 +113,8 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
                         lab.addStudent(loadStudent(event.getTarget().toFile()));
-                    else lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    else if (event.getKind() == FileSystemEvent.EventKind.DELETED)
+                        lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));
                 });
         return lab;
     }

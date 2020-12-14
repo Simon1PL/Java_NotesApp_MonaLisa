@@ -1,6 +1,8 @@
 package pl.edu.agh.monalisa.model;
 
 import com.google.gson.Gson;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
@@ -13,8 +15,8 @@ import java.nio.file.Path;
 public class AssignmentFile extends GenericFile {
     private AvailableExtensions extension;
     private Notes notes = new Notes();
-    private String text;
     private Path notesPath;
+    BehaviorSubject<String> observableText = BehaviorSubject.create();
 
     public AssignmentFile(String name, Path parent) {
         super(name, parent);
@@ -30,13 +32,14 @@ public class AssignmentFile extends GenericFile {
         }
     }
 
-    public String getText() {
-        return text;
+    public Observable<String> getText() {
+        return observableText;
     }
 
     public void loadTextFromFile() {
         try {
-            this.text = this.getPath().toFile().exists() ? Files.readString(this.getPath()) : "";
+            if (this.getPath().toFile().exists())
+                this.observableText.onNext(Files.readString(this.getPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }

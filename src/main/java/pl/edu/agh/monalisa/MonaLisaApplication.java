@@ -55,9 +55,9 @@ public class MonaLisaApplication extends Application {
         subject1.create();
         Lab lab1 = new Lab("Lab1", subject1);
         lab1.create();
-        Student student1 = new Student("Student1", lab1.getPath());
+        Student student1 = new Student("Student1", lab1);
         student1.create();
-        AssignmentFile assignmentFile1 = new AssignmentFile("main.py", student1.getPath());
+        AssignmentFile assignmentFile1 = new AssignmentFile("main.py", student1);
         assignmentFile1.create();
         try {
             FileWriter fileWriter = new FileWriter(assignmentFile1.getPath().toFile());

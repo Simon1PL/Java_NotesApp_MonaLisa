@@ -3,20 +3,21 @@ package pl.edu.agh.monalisa.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 
 public class Student extends Package {
     private final ObservableList<AssignmentFile> assignments;
+    private final Lab parent;
 
-    public Student(String name, Path parentDirectoryPath, List<AssignmentFile> assignments) {
-        super(name, parentDirectoryPath);
+    public Student(String name, Lab parent, List<AssignmentFile> assignments) {
+        super(name, parent.getPath());
+        this.parent = parent;
         this.assignments = FXCollections.observableList(assignments);
     }
 
-    public Student(String fileName, Path parent) {
-        super(fileName, parent);
+    public Student(String fileName, Lab parent) {
+        super(fileName, parent.getPath());
+        this.parent = parent;
         this.assignments = FXCollections.observableArrayList();
     }
 
@@ -31,5 +32,9 @@ public class Student extends Package {
 
     public ObservableList<AssignmentFile> getAssignments() {
         return assignments;
+    }
+
+    public Lab getParent() {
+        return parent;
     }
 }

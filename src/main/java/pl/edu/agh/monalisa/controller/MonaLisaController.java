@@ -4,11 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -17,6 +15,8 @@ import pl.edu.agh.monalisa.loader.FilesystemWatcher;
 import pl.edu.agh.monalisa.model.*;
 import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.Package;
+import pl.edu.agh.monalisa.view.StudentCell;
+import pl.edu.agh.monalisa.view.VisibleParagraphStyler;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -49,6 +49,9 @@ public class MonaLisaController {
 
     @FXML
     private TextArea noteView;
+
+    @FXML
+    private ListView<Student> studentListView;
 
     private static final String[] KEYWORDS = new String[]{
             "abstract", "assert", "boolean", "break", "byte",
@@ -133,12 +136,16 @@ public class MonaLisaController {
 
                 noteView.setText(this.selectedFile.noteProperty().getValue());
                 this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
+
+                studentListView.setItems(this.selectedFile.getParent().getParent().getStudents());
             }
         });
 
-        addNoteButton.setOnAction((actionEvent) -> {
-            if (this.selectedFile != null) this.selectedFile.addNote(new Note(this.notesAmount++, "title", "NOTE"));
-        });
+//        addNoteButton.setOnAction((actionEvent) -> {
+//            if (this.selectedFile != null) this.selectedFile.addNote(new Note(this.notesAmount++, "title", "NOTE"));
+//        });
+
+        studentListView.setCellFactory(param -> new StudentCell());
     }
 
     private void updateTree(TreeItem<Package> parent, ListChangeListener.Change<? extends Package> change) {

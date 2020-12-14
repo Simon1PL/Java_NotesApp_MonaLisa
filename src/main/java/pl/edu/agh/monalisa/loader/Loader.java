@@ -9,7 +9,9 @@ import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -98,34 +100,35 @@ public class Loader {
         var studentFiles = labFile.listFiles();
         if (studentFiles == null) return null;
 
-        var students = Arrays.stream(studentFiles)
-                .map(this::loadStudent)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        var lab = new Lab(labFile.getName(), labFile.getParentFile().toPath(), new ArrayList<>());
 
-        var lab = new Lab(labFile.getName(), labFile.getParentFile().toPath(), students);
+        Arrays.stream(studentFiles)
+                .map(studentFile -> loadStudent(studentFile, lab))
+                .filter(Objects::nonNull)
+                .forEach(lab::addStudent);
+
         filesystemListener.register(lab, FileType.DIRECTORY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED)
-                        lab.addStudent(loadStudent(event.getTarget().toFile()));
+                        lab.addStudent(loadStudent(event.getTarget().toFile(), lab));
                     else lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));
                 });
         return lab;
     }
 
-    private Student loadStudent(File studentFile) {
+    private Student loadStudent(File studentFile, Lab lab) {
         var assignmentFiles = studentFile.listFiles();
         if (assignmentFiles == null) return null;
 
-        var students = Arrays.stream(assignmentFiles)
+        var student = new Student(studentFile.getName(), lab, new ArrayList<>());
+
+        Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
                 .filter(file -> !file.toString().endsWith(".note"))
-                .map(file -> new AssignmentFile(file.getName(), studentFile.toPath()))
-                .collect(Collectors.toList());
-
-        var student = new Student(studentFile.getName(), studentFile.getParentFile().toPath(), students);
+                .map(file -> new AssignmentFile(file.getName(), student))
+                .forEach(student::addAssigment);
 
         filesystemListener.register(student, FileType.FILE)
                 .subscribeOn(Schedulers.io())
@@ -133,7 +136,7 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         File assignmentFile = event.getTarget().toFile();
-                        student.addAssigment(new AssignmentFile(assignmentFile.getName(), assignmentFile.getParentFile().toPath()));
+                        student.addAssigment(new AssignmentFile(assignmentFile.getName(), student));
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
                         student.getAssignments().removeIf(a -> a.getPath().equals(event.getTarget()));
                     } else {

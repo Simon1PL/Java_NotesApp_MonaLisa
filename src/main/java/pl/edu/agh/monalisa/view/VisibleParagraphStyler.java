@@ -1,4 +1,4 @@
-package pl.edu.agh.monalisa.controller;
+package pl.edu.agh.monalisa.view;
 
 import javafx.application.Platform;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -9,7 +9,7 @@ import org.reactfx.collection.ListModification;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-class VisibleParagraphStyler<PS, SEG, S> implements Consumer<ListModification<? extends Paragraph<PS, SEG, S>>>
+public class VisibleParagraphStyler<PS, SEG, S> implements Consumer<ListModification<? extends Paragraph<PS, SEG, S>>>
 {
     private final GenericStyledArea<PS, SEG, S> area;
     private final Function<String, StyleSpans<S>> computeStyles;

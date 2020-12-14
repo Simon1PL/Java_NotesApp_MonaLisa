@@ -20,9 +20,11 @@ public class AssignmentFile extends GenericFile {
     private Path notesPath;
     private Disposable fileContentListener;
     private final StringProperty note;
+    private final Student parent;
 
-    public AssignmentFile(String name, Path parent) {
-        super(name, parent);
+    public AssignmentFile(String name, Student parent) {
+        super(name, parent.getPath());
+        this.parent = parent;
         this.extension = AvailableExtensionsEnum.getExtension(name);
         this.loadTextFromFile();
         this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
@@ -95,5 +97,9 @@ public class AssignmentFile extends GenericFile {
 
     public void setNote(String note) {
         this.note.set(note);
+    }
+
+    public Student getParent() {
+        return parent;
     }
 }

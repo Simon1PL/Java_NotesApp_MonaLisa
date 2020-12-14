@@ -17,10 +17,12 @@ import java.util.stream.Collectors;
 public class Loader {
     private Root root;
     private final FilesystemWatcher filesystemListener;
+    private final NoteLoader noteLoader;
 
     @Inject
-    public Loader(FilesystemWatcher filesystemListener) {
+    public Loader(FilesystemWatcher filesystemListener, NoteLoader noteLoader) {
         this.filesystemListener = filesystemListener;
+        this.noteLoader = noteLoader;
     }
 
     @Inject
@@ -119,7 +121,7 @@ public class Loader {
 
         var students = Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
-                .filter(file -> !file.toString().endsWith(".json"))
+                .filter(file -> !file.toString().endsWith(".note"))
                 .map(file -> new AssignmentFile(file.getName(), studentFile.toPath()))
                 .collect(Collectors.toList());
 
@@ -138,6 +140,8 @@ public class Loader {
                         student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
                     }
                 });
+
+        student.getAssignments().forEach(noteLoader::setupAssignmentFile);
 
         return student;
     }

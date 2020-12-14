@@ -70,7 +70,6 @@ public class LoaderTest {
         assertEquals(student.getChildren().get(0).getName(), "main.py");
     }
 
-    @Test
     public void modelUpdatedOnDirectoryCreated(){
         Injector injector = Guice.createInjector(new MonaLisaModule());
         var loader = injector.getInstance(Loader.class);

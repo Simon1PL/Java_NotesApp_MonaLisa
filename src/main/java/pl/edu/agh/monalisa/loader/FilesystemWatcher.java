@@ -23,6 +23,7 @@ public class FilesystemWatcher {
                     WatchKey key = watcher.take();
                     for (WatchEvent<?> event : key.pollEvents()) {
                         var targetPath = pkg.getPath().resolve((Path) event.context());
+                        if (targetPath.toString().endsWith(".note")) continue;
                         if (event.kind() == ENTRY_CREATE && fileType == FileType.fromFile(targetPath.toFile()))
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
                         else if (event.kind() == ENTRY_DELETE)

@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.HBox;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -42,6 +43,12 @@ public class MonaLisaController {
 
     @FXML
     private Button addNoteButton;
+
+    @FXML
+    private HBox container;
+
+    @FXML
+    private TextArea noteView;
 
     private static final String[] KEYWORDS = new String[]{
             "abstract", "assert", "boolean", "break", "byte",
@@ -115,11 +122,17 @@ public class MonaLisaController {
 
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                if (this.selectedFile != null)
+                if (this.selectedFile != null) {
                     watcher.closeAssignmentFile(this.selectedFile);
+                    this.selectedFile.noteProperty().unbindBidirectional(noteView.textProperty());
+                    noteView.clear();
+                }
                 this.selectedFile = (AssignmentFile) newValue.getValue();
                 var disposable = watcher.openAssignmentFile(this.selectedFile).subscribe(this.fileView::replaceText);
                 this.selectedFile.setFileContentListener(disposable);
+
+                noteView.setText(this.selectedFile.noteProperty().getValue());
+                this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
             }
         });
 
@@ -161,13 +174,13 @@ public class MonaLisaController {
         while (matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    matcher.group("BRACKET") != null ? "bracket" :
-                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */
+                            matcher.group("PAREN") != null ? "paren" :
+                                    matcher.group("BRACE") != null ? "brace" :
+                                            matcher.group("BRACKET") != null ? "bracket" :
+                                                    matcher.group("SEMICOLON") != null ? "semicolon" :
+                                                            matcher.group("STRING") != null ? "string" :
+                                                                    matcher.group("COMMENT") != null ? "comment" :
+                                                                            null; /* never happens */
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

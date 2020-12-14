@@ -4,8 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.fxmisc.richtext.*?>
 
-<?import javafx.geometry.Insets?>
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
+<HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" spacing="20" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
    <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -29,7 +28,7 @@
                         <VBox layoutX="59.0" layoutY="105.0" prefHeight="771.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <Label text="Label" />
-                              <ListView maxHeight="Infinity" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
+                              <ListView maxHeight="Infinity" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                            </children>
                         </VBox>
                      </children></AnchorPane>
@@ -37,9 +36,10 @@
            </Tab>
         </tabs>
       </TabPane>
-      <VBox maxWidth="Infinity" prefHeight="400.0" HBox.hgrow="ALWAYS">
+      <VBox maxWidth="Infinity" prefHeight="400.0" HBox.hgrow="ALWAYS" spacing="20">
          <children>
-            <CodeArea fx:id="fileView" disable="true" maxWidth="Infinity" prefHeight="332.0" />
+            <CodeArea fx:id="fileView" disable="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS"/>
+            <TextArea prefHeight="200.0" prefWidth="200.0" fx:id="noteView"/>
             <Button fx:id="addNoteButton" mnemonicParsing="false" text="Button" />
          </children>
       </VBox>

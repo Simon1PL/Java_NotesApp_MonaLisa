@@ -1,15 +1,12 @@
 package pl.edu.agh.monalisa.model;
 
 import com.google.gson.Gson;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
-import pl.edu.agh.monalisa.loader.FileContentEvent;
-import pl.edu.agh.monalisa.loader.FileSystemEvent;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,18 +15,18 @@ import java.nio.file.Path;
 
 public class AssignmentFile extends GenericFile {
     private AvailableExtensions extension;
-    private Notes notes = new Notes();
+    private Notes notes = new Notes();//not used currently
     private String text;
     private Path notesPath;
     private Disposable fileContentListener;
-    private StringProperty content;
+    private final StringProperty note;
 
     public AssignmentFile(String name, Path parent) {
         super(name, parent);
         this.extension = AvailableExtensionsEnum.getExtension(name);
         this.loadTextFromFile();
         this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
-        this.content = new SimpleStringProperty();
+        this.note = new SimpleStringProperty();
         try {
             if (this.notesPath.toFile().exists()) {
                 this.notes = new Gson().fromJson(Files.readString(this.notesPath), Notes.class);
@@ -92,11 +89,11 @@ public class AssignmentFile extends GenericFile {
         this.fileContentListener = fileContentListener;
     }
 
-    public StringProperty contentProperty() {
-        return content;
+    public StringProperty noteProperty() {
+        return note;
     }
 
-    public void setContent(String content) {
-        this.content.set(content);
+    public void setNote(String note) {
+        this.note.set(note);
     }
 }

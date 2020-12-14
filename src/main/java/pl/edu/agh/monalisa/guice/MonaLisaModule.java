@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
+import pl.edu.agh.monalisa.loader.NoteLoader;
 
 import java.nio.file.Path;
 
@@ -15,6 +16,10 @@ public class MonaLisaModule extends AbstractModule {
     public FilesystemWatcher provideFilesystemListener() {
         return new FilesystemWatcher();
     }
+
+    @Provides
+    @Singleton
+    public NoteLoader provideNoteLoader(){return new NoteLoader();}
 
     @Override
     protected void configure() {

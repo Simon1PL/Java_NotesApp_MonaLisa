@@ -22,12 +22,16 @@ public class Notes {
     }
 
     public void removeNote(Note note) {
-        Note removedNote = this.notes.stream().filter(n -> n.getLine() == note.getLine()).findFirst().get();
+        Note removedNote = this.notes.stream()
+                .filter(n -> n.getLine() == note.getLine())
+                .findFirst().orElseThrow();
         this.notes.remove(removedNote);
     }
 
     public void editNote(Note note) {
-        Note editedNote = this.notes.stream().filter(n -> n.getLine() == note.getLine()).findFirst().get();
+        Note editedNote = this.notes.stream()
+                .filter(n -> n.getLine() == note.getLine())
+                .findFirst().orElseThrow();
         this.notes.remove(editedNote);
         this.notes.add(note);
     }

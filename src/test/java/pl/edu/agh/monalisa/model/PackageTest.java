@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PackageTest {
     private static final String packageName = "MonaLisaTest";
-    private static final Package newPackage = new Year(packageName, Path.of(System.getProperty("user.dir"))) { };
+    private static final Package newPackage = new Package(packageName, Path.of(System.getProperty("user.dir"))) { };
 
     @Test
     public void getName() {

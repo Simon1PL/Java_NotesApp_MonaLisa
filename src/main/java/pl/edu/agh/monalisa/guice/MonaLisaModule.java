@@ -19,7 +19,9 @@ public class MonaLisaModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public NoteLoader provideNoteLoader(){return new NoteLoader();}
+    public NoteLoader provideNoteLoader() {
+        return new NoteLoader();
+    }
 
     @Override
     protected void configure() {

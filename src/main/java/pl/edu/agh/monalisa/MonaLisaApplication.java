@@ -42,7 +42,7 @@ public class MonaLisaApplication extends Application {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         System.out.println("Stage is closing");
     }
 
@@ -53,7 +53,7 @@ public class MonaLisaApplication extends Application {
         year1.create();
         Subject subject1 = new Subject("WDI", year1.getPath());
         subject1.create();
-        Lab lab1 = new Lab("Lab1", subject1);
+        Lab lab1 = new Lab("Lab1", subject1.getPath());
         lab1.create();
         Student student1 = new Student("Student1", lab1);
         student1.create();

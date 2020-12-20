@@ -1,40 +1,32 @@
 package pl.edu.agh.monalisa.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Student extends Package {
-    private final ObservableList<AssignmentFile> assignments;
     private final Lab parent;
 
-    public Student(String name, Lab parent, List<AssignmentFile> assignments) {
-        super(name, parent.getPath());
-        this.parent = parent;
-        this.assignments = FXCollections.observableList(assignments);
-    }
-
     public Student(String fileName, Lab parent) {
-        super(fileName, parent.getPath());
-        this.parent = parent;
-        this.assignments = FXCollections.observableArrayList();
+        this(fileName, parent, null);
     }
 
-    @Override
-    public ObservableList<? extends Package> getChildren() {
-        return getAssignments();
+    public Student(String name, Lab parent, List<AssignmentFile> assignments) {
+        super(name, parent.getPath(), assignments);
+        this.parent = parent;
     }
 
     public void addAssigment(AssignmentFile assigment) {
-        this.assignments.add(assigment);
-    }
-
-    public ObservableList<AssignmentFile> getAssignments() {
-        return assignments;
+        this.addChild(assigment);
     }
 
     public Lab getParent() {
         return parent;
+    }
+
+    public Collection<AssignmentFile> getAssignments() {
+        return this.getChildren().stream()
+                .filter(child -> child instanceof AssignmentFile)
+                .map(child -> (AssignmentFile)child).collect(Collectors.toList());
     }
 }

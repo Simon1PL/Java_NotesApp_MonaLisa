@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
 
@@ -15,7 +14,7 @@ import java.nio.file.Path;
 
 public class AssignmentFile extends GenericFile {
     private AvailableExtensions extension;
-    private Notes notes = new Notes();//not used currently
+    private Notes notes = new Notes(); //not used currently
     private String text;
     private Path notesPath;
     private Disposable fileContentListener;
@@ -29,13 +28,13 @@ public class AssignmentFile extends GenericFile {
         this.loadTextFromFile();
         this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
         this.note = new SimpleStringProperty();
-        try {
-            if (this.notesPath.toFile().exists()) {
+        /*if (this.notesPath.toFile().exists()) {
+            try {
                 this.notes = new Gson().fromJson(Files.readString(this.notesPath), Notes.class);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }*/
     }
 
     public String getText() {
@@ -48,11 +47,6 @@ public class AssignmentFile extends GenericFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public ObservableList<? extends Package> getChildren() {
-        return null;
     }
 
     public void addNote(Note note) {

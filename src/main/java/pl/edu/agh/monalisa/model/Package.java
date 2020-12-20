@@ -1,68 +1,54 @@
 package pl.edu.agh.monalisa.model;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class Package {
-    private String name;
-    private Path path;
+public abstract class Package extends FileOrPackage {
+    private ObservableList<FileOrPackage> children = FXCollections.observableArrayList();
 
-    public Package(String name, Path parentDirectoryPath) {
-        this.name = name;
-        if (parentDirectoryPath == null)
-            path = Path.of(this.name);
-        else
-            this.path = parentDirectoryPath.resolve(Path.of(this.name));
+    public Package(String name, Path parentDirectoryPath, List<? extends FileOrPackage> children) {
+        super(name, parentDirectoryPath);
+        if (children != null) {
+            this.setChildren(children);
+        }
     }
 
-    public Package(String name, Package parentDirectory) {
-        this.name = name;
-        this.path = parentDirectory.path.resolve(Path.of(this.name));
+    public ObservableList<? extends FileOrPackage> getChildren() {
+        return this.children;
+    }
+
+    private void setChildren(List<? extends FileOrPackage> children) {
+        this.children = FXCollections.observableList(children.stream().map(child -> (FileOrPackage) child).collect(Collectors.toList()));
+    }
+
+    public void addChild(FileOrPackage child) {
+        children.add(child);
+    }
+
+    public void removeChild(Path path) {
+        children.removeIf(child -> child.getPath().equals(path));
     }
 
     public void create() {
-        File mainAppFile = this.path.toFile();
+        java.io.File mainAppFile = this.getPath().toFile();
         mainAppFile.mkdir();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    } // w setName trzeba zrobić aby nazwa była edytowana na dysku
-
-    public Path getPath() {
-        return path;
-    }
-
     public void delete() {
-        File[] files = this.path.toFile().listFiles();
-        if(files != null) {
-            for (final File file : files) {
-                deleteRecursive(file);
-            }
-        }
-        this.path.toFile().delete();
+        deleteRecursive(this.getPath().toFile());
     }
 
-    private void deleteRecursive(File dir) {
-        File[] files = dir.listFiles();
-        if(files != null) {
-            for (final File file : files) {
+    private void deleteRecursive(java.io.File dir) {
+        java.io.File[] files = dir.listFiles();
+        if (files != null) {
+            for (final java.io.File file : files) {
                 deleteRecursive(file);
             }
         }
         dir.delete();
-    }
-
-    public abstract ObservableList<? extends Package> getChildren();
-
-    @Override
-    public String toString() {
-        return this.getName();
     }
 }

@@ -6,7 +6,6 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -36,7 +35,7 @@ public class MonaLisaController {
     private int notesAmount = 1; //Do wywalenia potem
 
     @FXML
-    private TreeView<Package> fileTree;
+    private TreeView<FileOrPackage> fileTree;
 
     @FXML
     private CodeArea fileView;
@@ -97,26 +96,8 @@ public class MonaLisaController {
         fileTree.setRoot(new TreeItem<>(model));
         fileTree.setShowRoot(false);
 
-        for (Year year : model.getYears()) {
-            TreeItem<Package> yearItem = addTreeItem(fileTree.getRoot(), year);
-            addListener(yearItem, year);
-            for (Subject subject : year.getSubjects()) {
-                var subjectItem = addTreeItem(yearItem, subject);
-                addListener(subjectItem, subject);
-                for (Lab lab : subject.getLabs()) {
-                    var labItem = addTreeItem(subjectItem, lab);
-                    addListener(labItem, lab);
-                    for (Student student : lab.getStudents()) {
-                        var studentItem = addTreeItem(labItem, student);
-                        addListener(studentItem, student);
+        loadFileTree();
 
-                        for (AssignmentFile assignmentFile : student.getAssignments())
-                            addTreeItem(studentItem, assignmentFile);
-                    }
-                }
-            }
-
-        }
         fileView.setParagraphGraphicFactory(LineNumberFactory.get(fileView));
         fileView.getVisibleParagraphs().addModificationObserver(
                 new VisibleParagraphStyler<>(fileView, this::computeHighlighting));
@@ -148,26 +129,46 @@ public class MonaLisaController {
         studentListView.setCellFactory(param -> new StudentCell());
     }
 
-    private void updateTree(TreeItem<Package> parent, ListChangeListener.Change<? extends Package> change) {
-        while (change.next())
+    private void updateTree(TreeItem<FileOrPackage> parent, ListChangeListener.Change<? extends FileOrPackage> change) {
+        while (change.next()) {
             if (change.wasAdded()) {
                 change.getAddedSubList().forEach(pkg -> {
                     var newTreeItem = addTreeItem(parent, pkg);
-                    if (pkg.getChildren() != null)
-                        addListener(newTreeItem, pkg);
+                    if (pkg instanceof Package)
+                        addListener(newTreeItem, (Package) pkg);
                 });
             } else if (change.wasRemoved()) {
                 change.getRemoved().forEach(pkg -> {
                     parent.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg));
                 });
             }
+        }
     }
 
-    private void addListener(TreeItem<Package> parent, Package pkg) {
-        pkg.getChildren().addListener((ListChangeListener<Package>) c -> updateTree(parent, c));
+    private void addListener(TreeItem<FileOrPackage> parent, Package pkg) {
+        pkg.getChildren().addListener((ListChangeListener<FileOrPackage>) c -> updateTree(parent, c));
     }
 
-    private TreeItem<Package> addTreeItem(TreeItem<Package> parent, Package item) {
+    private void loadFileTree() {
+        loadFileTreeRecursive(fileTree.getRoot());
+        addListener(fileTree.getRoot(), (Package) fileTree.getRoot().getValue());
+    }
+
+    private void loadFileTreeRecursive(TreeItem<FileOrPackage> parent) {
+        if (parent.getValue() instanceof Package) {
+            ((Package)parent.getValue()).getChildren().forEach(child -> {
+                TreeItem<FileOrPackage> newItem = addTreeItem(parent, child);
+                if (child instanceof Package) {
+                    addListener(newItem, (Package)child);
+                     loadFileTreeRecursive(newItem);
+                }
+            });
+        } else {
+            System.err.println("Can't addListenerRecursively on file which is not a package");
+        }
+    }
+
+    private TreeItem<FileOrPackage> addTreeItem(TreeItem<FileOrPackage> parent, FileOrPackage item) {
         var newItem = new TreeItem<>(item);
         parent.getChildren().add(newItem);
         return newItem;

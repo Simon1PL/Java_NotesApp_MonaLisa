@@ -1,34 +1,24 @@
 package pl.edu.agh.monalisa.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import java.nio.file.Path;
 import java.util.List;
 
 public class Year extends Package {
-    private final ObservableList<Subject> subjects;
 
-    public Year(String name, Path path) {
-        super(name, path);
-        this.subjects = FXCollections.observableArrayList();
+    public Year(String name, Path parent) {
+        this(name, parent, null);
     }
 
-    public Year(String name, Path parentDirectoryPath, List<Subject> subjects) {
-        super(name, parentDirectoryPath);
-        this.subjects = FXCollections.observableList(subjects);
-    }
-
-    @Override
-    public ObservableList<? extends Package> getChildren() {
-        return getSubjects();
+    public Year(String name, Path parent, List<Subject> subjects) {
+        super(name, parent, subjects);
     }
 
     public void addSubject(Subject subject) {
-        this.subjects.add(subject);
+        this.addChild(subject);
     }
 
-    public ObservableList<Subject> getSubjects() {
-        return subjects;
-    }
+    /*public ObservableList<Subject> getSubjects() {
+        return FXCollections.observableList(this.getChildren().filtered(child -> child instanceof Subject));
+        return FXCollections.observableList(this.getChildren().stream().filter(child -> child instanceof Subject).map(child -> (Subject)child).collect(Collectors.toList()));
+    }*/
 }

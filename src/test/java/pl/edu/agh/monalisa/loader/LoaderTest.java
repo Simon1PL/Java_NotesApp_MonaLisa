@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
+import pl.edu.agh.monalisa.model.Lab;
+import pl.edu.agh.monalisa.model.Subject;
+import pl.edu.agh.monalisa.model.Year;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,18 +56,18 @@ public class LoaderTest {
 
         var model = loader.loadModel(tmpPath);
 
-        var year = model.getYears().get(0);
+        var year = model.getChildren().get(0);
         assertEquals(year.getName(), "2018");
 
 
-        var subject = year.getSubjects().get(0);
+        var subject = ((Year)year).getChildren().get(0);
         assertEquals(subject.getName(), "WDI");
 
 
-        var lab = subject.getLabs().get(0);
+        var lab = ((Subject)subject).getChildren().get(0);
         assertEquals(lab.getName(), "Lab1");
 
-        var student = lab.getStudents().get(0);
+        var student = ((Lab)lab).getStudents().get(0);
         assertEquals(student.getName(), "Student1");
 
         assertEquals(student.getChildren().get(0).getName(), "main.py");
@@ -78,7 +81,7 @@ public class LoaderTest {
 
         model.getPath().resolve("2019").toFile().mkdir();
 
-        assertEquals(2, model.getYears().size());
+        assertEquals(2, model.getChildren().size());
     }
 
     public void modelUpdatesOnFileDeleted(){

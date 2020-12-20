@@ -12,11 +12,7 @@ public class Notes {
 
     public void addNote(Note note) {
         if (this.notes.stream().anyMatch(n -> n.getLine() == note.getLine())) {
-            try {
-                throw new Exception("Cant add more than 1 comment for the same line");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            System.err.println("Cant add more than 1 comment for the same line");
         }
         this.notes.add(note);
     }

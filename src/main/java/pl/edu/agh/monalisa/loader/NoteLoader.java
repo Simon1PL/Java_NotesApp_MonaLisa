@@ -17,7 +17,9 @@ public class NoteLoader {
         var noteFile = Path.of(file.getPath().toString() + ".note");
 
         try {
-            file.setNote(Files.readString(noteFile));
+            if (noteFile.toFile().exists()) {
+                file.setNote(Files.readString(noteFile));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

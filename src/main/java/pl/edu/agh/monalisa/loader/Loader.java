@@ -2,7 +2,6 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import pl.edu.agh.monalisa.model.*;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -27,8 +25,7 @@ public class Loader {
         this.noteLoader = noteLoader;
     }
 
-    @Inject
-    public Root loadModel(@Named("RootPath") Path rootPath) {
+    public Root loadModel(Path rootPath) {
         var files = rootPath.toFile().listFiles();
         if (files == null) throw new IllegalArgumentException("Root path must be a directory");
 
@@ -43,10 +40,11 @@ public class Loader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         root.addYear(loadYear(event.getTarget().toFile()));
-                    else
-                        root.getYears().removeIf(y -> y.getPath().equals(event.getTarget()));
+                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
+                        root.removeChild(event.getTarget());
+                    }
                 });
         return root;
     }
@@ -66,9 +64,11 @@ public class Loader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         year.addSubject(loadSubject(event.getTarget().toFile()));
-                    else year.getSubjects().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
+                        year.getChildren().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    }
                 });
         return year;
     }
@@ -89,9 +89,11 @@ public class Loader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         subject.addLab(loadLab(event.getTarget().toFile()));
-                    else subject.getLabs().removeIf(l -> l.getPath().equals(event.getTarget()));
+                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
+                        subject.getChildren().removeIf(l -> l.getPath().equals(event.getTarget()));
+                    }
                 });
         return subject;
     }
@@ -111,9 +113,11 @@ public class Loader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         lab.addStudent(loadStudent(event.getTarget().toFile(), lab));
-                    else lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
+                        lab.getChildren().removeIf(s -> s.getPath().equals(event.getTarget()));
+                    }
                 });
         return lab;
     }
@@ -138,9 +142,9 @@ public class Loader {
                         File assignmentFile = event.getTarget().toFile();
                         student.addAssigment(new AssignmentFile(assignmentFile.getName(), student));
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        student.getAssignments().removeIf(a -> a.getPath().equals(event.getTarget()));
+                        student.removeChild(event.getTarget());
                     } else {
-                        student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
+                        student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().ifPresent(file -> file.loadTextFromFile());
                     }
                 });
 

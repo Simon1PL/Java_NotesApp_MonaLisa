@@ -8,30 +8,50 @@ import pl.edu.agh.monalisa.model.Package;
 
 public class FileTree extends TreeView<GenericFile> {
 
-    public void setModel(Root model){
+    public void setModel(Root model) {
         setRoot(new TreeItem<>(model));
         setShowRoot(false);
 
-        for (Year year : model.getChildren()) {
-            TreeItem<GenericFile> yearItem = addTreeItem(getRoot(), year);
-            addListener(yearItem, year);
-            for (Subject subject : year.getChildren()) {
-                var subjectItem = addTreeItem(yearItem, subject);
-                addListener(subjectItem, subject);
-                for (Lab lab : subject.getChildren()) {
-                    var labItem = addTreeItem(subjectItem, lab);
-                    addListener(labItem, lab);
-                    for (Student student : lab.getChildren()) {
-                        var studentItem = addTreeItem(labItem, student);
-                        addListener(studentItem, student);
+        loadModel(model);
+    }
 
-                        for (AssignmentFile assignmentFile : student.getChildren())
-                            addTreeItem(studentItem, assignmentFile);
-                    }
-                }
-            }
-
+    private void loadModel(Root root) {
+        for (Year year : root.getChildren()) {
+            loadYear(year, getRoot());
         }
+    }
+
+    private void loadYear(Year year, TreeItem<GenericFile> parent) {
+        TreeItem<GenericFile> yearItem = loadPackage(year, parent);
+        for (Subject subject : year.getChildren()) {
+            loadSubject(subject, yearItem);
+        }
+    }
+
+    private void loadSubject(Subject subject, TreeItem<GenericFile> parent) {
+        var subjectItem = loadPackage(subject, parent);
+        for (Lab lab : subject.getChildren()) {
+            loadLab(lab, subjectItem);
+        }
+    }
+
+    private void loadLab(Lab lab, TreeItem<GenericFile> parent) {
+        var labItem = loadPackage(lab, parent);
+        for (Student student : lab.getChildren()) {
+            loadStudent(student, labItem);
+        }
+    }
+
+    private void loadStudent(Student student, TreeItem<GenericFile> parent) {
+        var studentItem = loadPackage(student, parent);
+        for (AssignmentFile assignmentFile : student.getChildren())
+            addTreeItem(studentItem, assignmentFile);
+    }
+
+    private TreeItem<GenericFile> loadPackage(Package<?> pkg, TreeItem<GenericFile> parent) {
+        var treeItem = addTreeItem(parent, pkg);
+        addListener(treeItem, pkg);
+        return treeItem;
     }
 
     private <T extends GenericFile> void addListener(TreeItem<GenericFile> parent, Package<T> pkg) {

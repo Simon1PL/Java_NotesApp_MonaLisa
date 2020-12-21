@@ -124,8 +124,6 @@ public class Loader {
                         student.addChild(new AssignmentFile(assignmentFile.getName(), student));
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
                         student.getChildren().removeIf(a -> a.getPath().equals(event.getTarget()));
-                    } else {
-                        student.getChildren().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().ifPresent(AssignmentFile::loadTextFromFile);
                     }
                 });
 

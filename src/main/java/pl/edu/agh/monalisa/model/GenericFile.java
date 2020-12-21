@@ -19,21 +19,18 @@ public abstract class GenericFile {
         this(name, parentDirectory.getPath());
     }
 
-    public void create() {
-        File mainAppFile = this.path.toFile();
-        mainAppFile.mkdir();
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    } // w setName trzeba zrobić aby nazwa była edytowana na dysku
 
     public Path getPath() {
         return path;
+    }
+
+    public void create() {
+        File mainAppFile = this.path.toFile();
+        mainAppFile.mkdir();
     }
 
     public void delete() {

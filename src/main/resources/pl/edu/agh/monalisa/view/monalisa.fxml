@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.fxmisc.richtext.*?>
+
+<Pane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
+   <children>
+      <HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" spacing="20" style="-fx-padding: 10;">
+         <children>
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Files">
+                  <content>
+                    <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0">
+                           <children>
+                              <TreeView fx:id="fileTree" layoutY="151.0" maxHeight="Infinity" maxWidth="Infinity" prefHeight="771.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab text="Notes">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </Tab>
+                 <Tab text="Students">
+                    <content>
+                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox layoutX="59.0" layoutY="105.0" prefHeight="771.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <Label text="Label" />
+                                    <ListView fx:id="studentListView" maxHeight="Infinity" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                 </Tab>
+              </tabs>
+            </TabPane>
+            <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
+               <children>
+                  <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity" VBox.vgrow="ALWAYS" />
+                  <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0" />
+                  <Button fx:id="addNoteButton" mnemonicParsing="false" text="Button" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</Pane>

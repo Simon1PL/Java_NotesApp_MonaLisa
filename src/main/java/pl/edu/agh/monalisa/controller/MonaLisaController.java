@@ -97,20 +97,20 @@ public class MonaLisaController {
         fileTree.setRoot(new TreeItem<>(model));
         fileTree.setShowRoot(false);
 
-        for (Year year : model.getYears()) {
+        for (Year year : model.getChildren()) {
             TreeItem<GenericFile> yearItem = addTreeItem(fileTree.getRoot(), year);
             addListener(yearItem, year);
-            for (Subject subject : year.getSubjects()) {
+            for (Subject subject : year.getChildren()) {
                 var subjectItem = addTreeItem(yearItem, subject);
                 addListener(subjectItem, subject);
-                for (Lab lab : subject.getLabs()) {
+                for (Lab lab : subject.getChildren()) {
                     var labItem = addTreeItem(subjectItem, lab);
                     addListener(labItem, lab);
-                    for (Student student : lab.getStudents()) {
+                    for (Student student : lab.getChildren()) {
                         var studentItem = addTreeItem(labItem, student);
                         addListener(studentItem, student);
 
-                        for (AssignmentFile assignmentFile : student.getAssignments())
+                        for (AssignmentFile assignmentFile : student.getChildren())
                             addTreeItem(studentItem, assignmentFile);
                     }
                 }
@@ -139,7 +139,7 @@ public class MonaLisaController {
                 noteView.setText(this.selectedFile.noteProperty().getValue());
                 this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
 
-                studentListView.setItems(this.selectedFile.getParent().getParent().getStudents());
+                studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
             }
         });
 

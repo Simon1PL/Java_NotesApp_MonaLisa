@@ -5,14 +5,15 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import pl.edu.agh.monalisa.model.Package;
 import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -27,6 +28,18 @@ public class Loader {
         this.noteLoader = noteLoader;
     }
 
+    private <T extends GenericFile> void registerPackageListener(Package<T> pkg, FileType childrenFileType, Function<File, T> loaderFunction) {
+        filesystemListener.register(pkg, childrenFileType)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(event -> {
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
+                        pkg.addChild(loaderFunction.apply(event.getTarget().toFile()));
+                    } else {
+                        pkg.getChildren().removeIf(c -> c.getPath().equals(event.getTarget()));
+                    }
+                });
+    }
+
     @Inject
     public Root loadModel(@Named("RootPath") Path rootPath) {
         var files = rootPath.toFile().listFiles();
@@ -39,15 +52,7 @@ public class Loader {
 
         root = new Root(rootPath.getFileName().toString(), rootPath.getParent(), years);
 
-        filesystemListener.register(root, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
-                        root.addYear(loadYear(event.getTarget().toFile()));
-                    else
-                        root.getYears().removeIf(y -> y.getPath().equals(event.getTarget()));
-                });
+        registerPackageListener(root, FileType.DIRECTORY, this::loadYear);
         return root;
     }
 
@@ -62,14 +67,8 @@ public class Loader {
 
         var year = new Year(yearFile.getName(), yearFile.getParentFile().toPath(), subjects);
 
-        filesystemListener.register(year, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
-                        year.addSubject(loadSubject(event.getTarget().toFile()));
-                    else year.getSubjects().removeIf(s -> s.getPath().equals(event.getTarget()));
-                });
+        registerPackageListener(year, FileType.DIRECTORY, this::loadSubject);
+
         return year;
     }
 
@@ -84,15 +83,7 @@ public class Loader {
 
         var subject = new Subject(subjectFile.getName(), subjectFile.getParentFile().toPath(), labs);
 
-
-        filesystemListener.register(subject, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
-                        subject.addLab(loadLab(event.getTarget().toFile()));
-                    else subject.getLabs().removeIf(l -> l.getPath().equals(event.getTarget()));
-                });
+        registerPackageListener(subject, FileType.DIRECTORY, this::loadLab);
         return subject;
     }
 
@@ -105,16 +96,10 @@ public class Loader {
         Arrays.stream(studentFiles)
                 .map(studentFile -> loadStudent(studentFile, lab))
                 .filter(Objects::nonNull)
-                .forEach(lab::addStudent);
+                .forEach(lab::addChild);
 
-        filesystemListener.register(lab, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED)
-                        lab.addStudent(loadStudent(event.getTarget().toFile(), lab));
-                    else lab.getStudents().removeIf(s -> s.getPath().equals(event.getTarget()));
-                });
+        registerPackageListener(lab, FileType.DIRECTORY, (file -> loadStudent(file, lab)));
+
         return lab;
     }
 
@@ -128,7 +113,7 @@ public class Loader {
                 .filter(File::isFile)
                 .filter(file -> !file.toString().endsWith(Note.NOTE_EXTENSION))
                 .map(file -> new AssignmentFile(file.getName(), student))
-                .forEach(student::addAssigment);
+                .forEach(student::addChild);
 
         filesystemListener.register(student, FileType.FILE)
                 .subscribeOn(Schedulers.io())
@@ -136,15 +121,15 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         File assignmentFile = event.getTarget().toFile();
-                        student.addAssigment(new AssignmentFile(assignmentFile.getName(), student));
+                        student.addChild(new AssignmentFile(assignmentFile.getName(), student));
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        student.getAssignments().removeIf(a -> a.getPath().equals(event.getTarget()));
+                        student.getChildren().removeIf(a -> a.getPath().equals(event.getTarget()));
                     } else {
-                        student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
+                        student.getChildren().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
                     }
                 });
 
-        student.getAssignments().forEach(noteLoader::setupAssignmentFile);
+        student.getChildren().forEach(noteLoader::setupAssignmentFile);
 
         return student;
     }

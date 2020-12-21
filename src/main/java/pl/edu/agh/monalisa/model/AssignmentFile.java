@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
 import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
 

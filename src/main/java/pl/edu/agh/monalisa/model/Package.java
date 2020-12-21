@@ -1,22 +1,30 @@
 package pl.edu.agh.monalisa.model;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
 import java.util.List;
 
-public abstract class Package extends GenericFile {
+public abstract class Package<T extends GenericFile> extends GenericFile {
 
+    protected final ObservableList<T> children;
 
     public Package(String name, Path parentDirectory) {
         super(name, parentDirectory);
+        children = FXCollections.observableArrayList();
     }
 
-    public Package(String name, Path parentDirectory, List<? extends GenericFile> children) {
+    public Package(String name, Path parentDirectory, List<T> children) {
         super(name, parentDirectory);
+        this.children = FXCollections.observableList(children);
     }
 
-    public abstract ObservableList<? extends Package> getChildrenPackages();
+    public ObservableList<T> getChildren() {
+        return children;
+    }
 
-    public abstract ObservableList<? extends GenericFile> getChildren();
+    public void addChild(T child) {
+        children.add(child);
+    }
 }

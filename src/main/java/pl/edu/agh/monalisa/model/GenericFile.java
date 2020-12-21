@@ -15,7 +15,7 @@ public abstract class GenericFile {
             this.path = parentDirectoryPath.resolve(Path.of(this.name));
     }
 
-    public GenericFile(String name, Package parentDirectory) {
+    public GenericFile(String name, Package<?> parentDirectory) {
         this(name, parentDirectory.getPath());
     }
 

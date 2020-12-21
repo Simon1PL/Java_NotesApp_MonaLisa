@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import pl.edu.agh.monalisa.model.AssignmentFile;
+import pl.edu.agh.monalisa.model.Note;
 import pl.edu.agh.monalisa.model.Package;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class FilesystemWatcher {
                     WatchKey key = watcher.take();
                     for (WatchEvent<?> event : key.pollEvents()) {
                         var targetPath = pkg.getPath().resolve((Path) event.context());
-                        if (targetPath.toString().endsWith(".note")) continue;
+                        if (targetPath.toString().endsWith(Note.NOTE_EXTENSION)) continue;
                         if (event.kind() == ENTRY_CREATE && fileType == FileType.fromFile(targetPath.toFile()))
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
                         else if (event.kind() == ENTRY_DELETE)
@@ -58,8 +59,7 @@ public class FilesystemWatcher {
             } catch (InterruptedException ignored) {
             }
         });
-        return observable.subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform());
+        return observable.subscribeOn(Schedulers.io());
     }
 
     public void closeAssignmentFile(AssignmentFile file) {

@@ -126,7 +126,7 @@ public class Loader {
 
         Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
-                .filter(file -> !file.toString().endsWith(".note"))
+                .filter(file -> !file.toString().endsWith(Note.NOTE_EXTENSION))
                 .map(file -> new AssignmentFile(file.getName(), student))
                 .forEach(student::addAssigment);
 

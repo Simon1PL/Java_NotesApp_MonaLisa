@@ -20,7 +20,12 @@ public class Year extends Package {
     }
 
     @Override
-    public ObservableList<? extends Package> getChildren() {
+    public ObservableList<? extends Package> getChildrenPackages() {
+        return getSubjects();
+    }
+
+    @Override
+    public ObservableList<? extends GenericFile> getChildren() {
         return getSubjects();
     }
 

@@ -67,7 +67,7 @@ public class LoaderTest {
         var student = lab.getStudents().get(0);
         assertEquals(student.getName(), "Student1");
 
-        assertEquals(student.getChildren().get(0).getName(), "main.py");
+        assertEquals(student.getChildrenPackages().get(0).getName(), "main.py");
     }
 
     public void modelUpdatedOnDirectoryCreated(){

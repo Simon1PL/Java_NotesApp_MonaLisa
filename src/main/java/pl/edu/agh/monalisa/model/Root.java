@@ -19,7 +19,12 @@ public class Root extends Package {
     }
 
     @Override
-    public ObservableList<? extends Package> getChildren() {
+    public ObservableList<? extends Package> getChildrenPackages() {
+        return getYears();
+    }
+
+    @Override
+    public ObservableList<? extends GenericFile> getChildren() {
         return getYears();
     }
 

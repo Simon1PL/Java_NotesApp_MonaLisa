@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class AssignmentFile extends GenericFile {
+public class AssignmentFile extends RegularFile {
     private AvailableExtensions extension;
     private Notes notes = new Notes();//not used currently
     private String text;
@@ -48,11 +48,6 @@ public class AssignmentFile extends GenericFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public ObservableList<? extends Package> getChildren() {
-        return null;
     }
 
     public void addNote(Note note) {

@@ -12,7 +12,7 @@ public class Lab extends Package {
     private ObservableList<Student> students;
 
     public Lab(String name, Subject subject) {
-        super(name, subject);
+        super(name, subject.getPath());
         this.students = FXCollections.observableArrayList();
     }
 
@@ -22,7 +22,12 @@ public class Lab extends Package {
     }
 
     @Override
-    public ObservableList<? extends Package> getChildren() {
+    public ObservableList<? extends Package> getChildrenPackages() {
+        return getStudents();
+    }
+
+    @Override
+    public ObservableList<? extends GenericFile> getChildren() {
         return getStudents();
     }
 

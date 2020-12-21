@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 
 public class Subject extends Package {
@@ -21,7 +20,12 @@ public class Subject extends Package {
     }
 
     @Override
-    public ObservableList<? extends Package> getChildren() {
+    public ObservableList<? extends Package> getChildrenPackages() {
+        return getLabs();
+    }
+
+    @Override
+    public ObservableList<? extends GenericFile> getChildren() {
         return getLabs();
     }
 

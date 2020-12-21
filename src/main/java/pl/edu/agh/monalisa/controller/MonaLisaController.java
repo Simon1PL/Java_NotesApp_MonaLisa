@@ -2,11 +2,11 @@ package pl.edu.agh.monalisa.controller;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -36,7 +36,7 @@ public class MonaLisaController {
     private int notesAmount = 1; //Do wywalenia potem
 
     @FXML
-    private TreeView<Package> fileTree;
+    private TreeView<GenericFile> fileTree;
 
     @FXML
     private CodeArea fileView;
@@ -98,7 +98,7 @@ public class MonaLisaController {
         fileTree.setShowRoot(false);
 
         for (Year year : model.getYears()) {
-            TreeItem<Package> yearItem = addTreeItem(fileTree.getRoot(), year);
+            TreeItem<GenericFile> yearItem = addTreeItem(fileTree.getRoot(), year);
             addListener(yearItem, year);
             for (Subject subject : year.getSubjects()) {
                 var subjectItem = addTreeItem(yearItem, subject);
@@ -131,7 +131,9 @@ public class MonaLisaController {
                     noteView.clear();
                 }
                 this.selectedFile = (AssignmentFile) newValue.getValue();
-                var disposable = watcher.openAssignmentFile(this.selectedFile).subscribe(this.fileView::replaceText);
+                var disposable = watcher.openAssignmentFile(this.selectedFile)
+                        .observeOn(JavaFxScheduler.platform())
+                        .subscribe(this.fileView::replaceText);
                 this.selectedFile.setFileContentListener(disposable);
 
                 noteView.setText(this.selectedFile.noteProperty().getValue());
@@ -148,13 +150,12 @@ public class MonaLisaController {
         studentListView.setCellFactory(param -> new StudentCell());
     }
 
-    private void updateTree(TreeItem<Package> parent, ListChangeListener.Change<? extends Package> change) {
+    private void updateTree(TreeItem<GenericFile> parent, ListChangeListener.Change<? extends GenericFile> change) {
         while (change.next())
             if (change.wasAdded()) {
-                change.getAddedSubList().forEach(pkg -> {
-                    var newTreeItem = addTreeItem(parent, pkg);
-                    if (pkg.getChildren() != null)
-                        addListener(newTreeItem, pkg);
+                change.getAddedSubList().forEach(file -> {
+                    var newTreeItem = addTreeItem(parent, file);
+                    if (file instanceof Package) addListener(newTreeItem, (Package) file);
                 });
             } else if (change.wasRemoved()) {
                 change.getRemoved().forEach(pkg -> {
@@ -163,11 +164,11 @@ public class MonaLisaController {
             }
     }
 
-    private void addListener(TreeItem<Package> parent, Package pkg) {
-        pkg.getChildren().addListener((ListChangeListener<Package>) c -> updateTree(parent, c));
+    private void addListener(TreeItem<GenericFile> parent, Package pkg) {
+        pkg.getChildren().addListener((ListChangeListener<GenericFile>) c -> updateTree(parent, c));
     }
 
-    private TreeItem<Package> addTreeItem(TreeItem<Package> parent, Package item) {
+    private TreeItem<GenericFile> addTreeItem(TreeItem<GenericFile> parent, GenericFile item) {
         var newItem = new TreeItem<>(item);
         parent.getChildren().add(newItem);
         return newItem;

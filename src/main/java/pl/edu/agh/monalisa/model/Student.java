@@ -3,6 +3,8 @@ package pl.edu.agh.monalisa.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Student extends Package {
@@ -22,7 +24,12 @@ public class Student extends Package {
     }
 
     @Override
-    public ObservableList<? extends Package> getChildren() {
+    public ObservableList<? extends Package> getChildrenPackages() {
+        return FXCollections.observableArrayList();
+    }
+
+    @Override
+    public ObservableList<? extends GenericFile> getChildren() {
         return getAssignments();
     }
 

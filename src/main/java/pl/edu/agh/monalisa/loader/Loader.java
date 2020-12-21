@@ -125,7 +125,7 @@ public class Loader {
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
                         student.getChildren().removeIf(a -> a.getPath().equals(event.getTarget()));
                     } else {
-                        student.getChildren().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().get().loadTextFromFile();
+                        student.getChildren().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().ifPresent(AssignmentFile::loadTextFromFile);
                     }
                 });
 

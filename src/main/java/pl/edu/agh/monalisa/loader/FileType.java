@@ -7,6 +7,7 @@ public enum FileType {
     DIRECTORY;
 
     public static FileType fromFile(File file) {
+        if (!file.exists()) return null;
         if (file.isDirectory()) return DIRECTORY;
         else return FILE;
     }

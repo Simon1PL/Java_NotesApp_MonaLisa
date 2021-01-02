@@ -1,6 +1,8 @@
 package pl.edu.agh.monalisa.model;
 
 public class Note {
+    public static String NOTE_EXTENSION = ".note";
+
     private int line;
     private String title;
     private String text;

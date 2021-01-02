@@ -2,8 +2,10 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import pl.edu.agh.monalisa.model.Package;
 import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
@@ -11,6 +13,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -25,7 +28,21 @@ public class Loader {
         this.noteLoader = noteLoader;
     }
 
-    public Root loadModel(Path rootPath) {
+    private <T extends GenericFile> void registerPackageListener(Package<T> pkg, FileType childrenFileType, Function<File, T> loaderFunction) {
+        filesystemListener.register(pkg, childrenFileType)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(event -> {
+                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
+                        pkg.addChild(loaderFunction.apply(event.getTarget().toFile()));
+                    } else {
+                        pkg.getChildren().removeIf(c -> c.getPath().equals(event.getTarget()));
+                    }
+                });
+    }
+
+    //TODO check
+    @Inject
+    public Root loadModel(@Named("RootPath") Path rootPath) {
         var files = rootPath.toFile().listFiles();
         if (files == null) throw new IllegalArgumentException("Root path must be a directory");
 
@@ -36,16 +53,7 @@ public class Loader {
 
         root = new Root(rootPath.getFileName().toString(), rootPath.getParent(), years);
 
-        filesystemListener.register(root, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        root.addYear(loadYear(event.getTarget().toFile()));
-                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        root.removeChild(event.getTarget());
-                    }
-                });
+        registerPackageListener(root, FileType.DIRECTORY, this::loadYear);
         return root;
     }
 
@@ -60,16 +68,8 @@ public class Loader {
 
         var year = new Year(yearFile.getName(), yearFile.getParentFile().toPath(), subjects);
 
-        filesystemListener.register(year, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        year.addSubject(loadSubject(event.getTarget().toFile()));
-                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        year.getChildren().removeIf(s -> s.getPath().equals(event.getTarget()));
-                    }
-                });
+        registerPackageListener(year, FileType.DIRECTORY, this::loadSubject);
+
         return year;
     }
 
@@ -84,17 +84,7 @@ public class Loader {
 
         var subject = new Subject(subjectFile.getName(), subjectFile.getParentFile().toPath(), labs);
 
-
-        filesystemListener.register(subject, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        subject.addLab(loadLab(event.getTarget().toFile()));
-                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        subject.getChildren().removeIf(l -> l.getPath().equals(event.getTarget()));
-                    }
-                });
+        registerPackageListener(subject, FileType.DIRECTORY, this::loadLab);
         return subject;
     }
 
@@ -107,18 +97,10 @@ public class Loader {
         Arrays.stream(studentFiles)
                 .map(studentFile -> loadStudent(studentFile, lab))
                 .filter(Objects::nonNull)
-                .forEach(lab::addStudent);
+                .forEach(lab::addChild);
 
-        filesystemListener.register(lab, FileType.DIRECTORY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        lab.addStudent(loadStudent(event.getTarget().toFile(), lab));
-                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        lab.getChildren().removeIf(s -> s.getPath().equals(event.getTarget()));
-                    }
-                });
+        registerPackageListener(lab, FileType.DIRECTORY, (file -> loadStudent(file, lab)));
+
         return lab;
     }
 
@@ -130,9 +112,9 @@ public class Loader {
 
         Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
-                .filter(file -> !file.toString().endsWith(".note"))
+                .filter(file -> !file.toString().endsWith(Note.NOTE_EXTENSION))
                 .map(file -> new AssignmentFile(file.getName(), student))
-                .forEach(student::addAssigment);
+                .forEach(student::addChild);
 
         filesystemListener.register(student, FileType.FILE)
                 .subscribeOn(Schedulers.io())
@@ -140,15 +122,13 @@ public class Loader {
                 .subscribe(event -> {
                     if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
                         File assignmentFile = event.getTarget().toFile();
-                        student.addAssigment(new AssignmentFile(assignmentFile.getName(), student));
+                        student.addChild(new AssignmentFile(assignmentFile.getName(), student));
                     } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        student.removeChild(event.getTarget());
-                    } else {
-                        student.getAssignments().stream().filter(a -> a.getPath().equals(event.getTarget())).findFirst().ifPresent(file -> file.loadTextFromFile());
+                        student.getChildren().removeIf(a -> a.getPath().equals(event.getTarget()));
                     }
                 });
 
-        student.getAssignments().forEach(noteLoader::setupAssignmentFile);
+        student.getChildren().forEach(noteLoader::setupAssignmentFile);
 
         return student;
     }

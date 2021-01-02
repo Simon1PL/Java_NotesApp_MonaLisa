@@ -60,14 +60,14 @@ public class LoaderTest {
         assertEquals(year.getName(), "2018");
 
 
-        var subject = ((Year)year).getChildren().get(0);
+        var subject = year.getChildren().get(0);
         assertEquals(subject.getName(), "WDI");
 
 
-        var lab = ((Subject)subject).getChildren().get(0);
+        var lab = subject.getChildren().get(0);
         assertEquals(lab.getName(), "Lab1");
 
-        var student = ((Lab)lab).getStudents().get(0);
+        var student = lab.getChildren().get(0);
         assertEquals(student.getName(), "Student1");
 
         assertEquals(student.getChildren().get(0).getName(), "main.py");

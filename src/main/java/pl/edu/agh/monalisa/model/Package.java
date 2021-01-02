@@ -5,50 +5,27 @@ import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public abstract class Package extends FileOrPackage {
-    private ObservableList<FileOrPackage> children = FXCollections.observableArrayList();
+public abstract class Package<T extends GenericFile> extends GenericFile {
 
-    public Package(String name, Path parentDirectoryPath, List<? extends FileOrPackage> children) {
-        super(name, parentDirectoryPath);
-        if (children != null) {
-            this.setChildren(children);
-        }
+    protected final ObservableList<T> children;
+
+    public Package(String name, Path parentDirectory) {
+        super(name, parentDirectory);
+        children = FXCollections.observableArrayList();
     }
 
-    public ObservableList<? extends FileOrPackage> getChildren() {
-        return this.children;
+    public Package(String name, Path parentDirectory, List<T> children) {
+        //TODO change to this
+        super(name, parentDirectory);
+        this.children = FXCollections.observableList(children);
     }
 
-    private void setChildren(List<? extends FileOrPackage> children) {
-        this.children = FXCollections.observableList(children.stream().map(child -> (FileOrPackage) child).collect(Collectors.toList()));
+    public ObservableList<T> getChildren() {
+        return children;
     }
 
-    public void addChild(FileOrPackage child) {
+    public void addChild(T child) {
         children.add(child);
-    }
-
-    public void removeChild(Path path) {
-        children.removeIf(child -> child.getPath().equals(path));
-    }
-
-    public void create() {
-        java.io.File mainAppFile = this.getPath().toFile();
-        mainAppFile.mkdir();
-    }
-
-    public void delete() {
-        deleteRecursive(this.getPath().toFile());
-    }
-
-    private void deleteRecursive(java.io.File dir) {
-        java.io.File[] files = dir.listFiles();
-        if (files != null) {
-            for (final java.io.File file : files) {
-                deleteRecursive(file);
-            }
-        }
-        dir.delete();
     }
 }

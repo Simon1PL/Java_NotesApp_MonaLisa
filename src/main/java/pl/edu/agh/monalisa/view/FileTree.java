@@ -16,6 +16,7 @@ public class FileTree extends TreeView<GenericFile> {
     }
 
     private void loadModel(Root root) {
+        addListener(getRoot(), root);
         for (Year year : root.getChildren()) {
             loadYear(year, getRoot());
         }

@@ -28,9 +28,6 @@ public class FilesystemWatcher {
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
                         else if (event.kind() == ENTRY_DELETE)
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.DELETED));
-                        else if (event.kind() == ENTRY_MODIFY) {
-                            subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.MODIFIED));
-                        }
                     }
                     if (!key.reset()) break;
                 }

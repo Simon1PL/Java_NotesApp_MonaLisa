@@ -5,7 +5,7 @@
 <?import org.fxmisc.richtext.*?>
 
 <?import pl.edu.agh.monalisa.view.FileTree?>
-<Pane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<Pane onKeyReleased="#handleOnKeyReleased" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
     <children>
         <HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -51,10 +51,13 @@
                 </TabPane>
                 <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
                     <children>
+                        <HBox style="-fx-alignment: center;">
+                            <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;"/>
+                            <Button fx:id="redoButton" mnemonicParsing="false" text="Redo" style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;"/>
+                        </HBox>
                         <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
                                   VBox.vgrow="ALWAYS"/>
                         <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>
-                        <Button fx:id="addNoteButton" mnemonicParsing="false" text="Button"/>
                     </children>
                 </VBox>
             </children>

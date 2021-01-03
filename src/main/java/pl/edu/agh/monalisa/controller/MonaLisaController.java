@@ -7,6 +7,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
@@ -14,10 +17,7 @@ import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.AssignmentFile;
 import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
-import pl.edu.agh.monalisa.view.FileTree;
-import pl.edu.agh.monalisa.view.GenericSyntaxHighlighter;
-import pl.edu.agh.monalisa.view.StudentCell;
-import pl.edu.agh.monalisa.view.VisibleParagraphStyler;
+import pl.edu.agh.monalisa.view.*;
 
 import java.nio.file.Path;
 
@@ -30,6 +30,7 @@ public class MonaLisaController {
     private final FilesystemWatcher watcher;
     private Root model;
     private AssignmentFile selectedFile;
+    private final History history;
 
     @FXML
     private FileTree fileTree;
@@ -38,7 +39,10 @@ public class MonaLisaController {
     private CodeArea fileView;
 
     @FXML
-    private Button addNoteButton;
+    private Button undoButton;
+
+    @FXML
+    private Button redoButton;
 
     @FXML
     private TextArea noteView;
@@ -50,22 +54,49 @@ public class MonaLisaController {
     public MonaLisaController(Loader loader, FilesystemWatcher watcher) {
         this.loader = loader;
         this.watcher = watcher;
+        this.history = new History();
     }
 
     @FXML
     public void initialize() {
         initializeFileTree();
 
-
         initializeFileTreeSelectionListener();
         initializeCodeView();
         initializeStudentView();
 
-//        addNoteButton.setOnAction((actionEvent) -> {
-//            if (this.selectedFile != null) this.selectedFile.addNote(new Note(this.notesAmount++, "title", "NOTE"));
-//        });
+        undoButton.setOnAction((actionEvent) -> {
+            if (history.canUndo()) {
+                fileTree.getSelectionModel().select(this.history.undo());
+            }
+        });
+        undoButton.setTooltip(new Tooltip("Alt + left arrow"));
+        undoButton.setDisable(!history.canUndo());
 
+        redoButton.setOnAction((actionEvent) -> {
+            if (history.canRedo()) {
+                fileTree.getSelectionModel().select(this.history.redo());
+            }
+        });
+        redoButton.setTooltip(new Tooltip("Alt + right arrow"));
+        redoButton.setDisable(!history.canRedo());
     }
+
+    @FXML
+    private void handleOnKeyReleased(KeyEvent event)
+    {
+        if (event.getCode() == KeyCode.LEFT && event.isAltDown()) {
+            if (history.canUndo()) {
+                fileTree.getSelectionModel().select(this.history.undo());
+            }
+        }
+        if (event.getCode() == KeyCode.RIGHT && event.isAltDown()) {
+            if (history.canRedo()) {
+                fileTree.getSelectionModel().select(this.history.redo());
+            }
+        }
+    }
+
 
     private void initializeFileTree() {
         model = loader.loadModel(this.rootPath);
@@ -75,21 +106,10 @@ public class MonaLisaController {
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                if (this.selectedFile != null) {
-                    watcher.closeAssignmentFile(this.selectedFile);
-                    this.selectedFile.noteProperty().unbindBidirectional(noteView.textProperty());
-                    noteView.clear();
-                }
-                this.selectedFile = (AssignmentFile) newValue.getValue();
-                var disposable = watcher.openAssignmentFile(this.selectedFile)
-                        .observeOn(JavaFxScheduler.platform())
-                        .subscribe(this.fileView::replaceText);
-                this.selectedFile.setFileContentListener(disposable);
-
-                noteView.setText(this.selectedFile.noteProperty().getValue());
-                this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
-
-                studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
+                history.addToHistory(newValue);
+                changeSelectedFile((AssignmentFile) newValue.getValue());
+                undoButton.setDisable(!history.canUndo());
+                redoButton.setDisable(!history.canRedo());
             }
         });
     }
@@ -104,6 +124,24 @@ public class MonaLisaController {
 
     private void initializeStudentView(){
         studentListView.setCellFactory(param -> new StudentCell());
+    }
+
+    private void changeSelectedFile(AssignmentFile newSelectedFile) {
+        if (this.selectedFile != null) {
+            watcher.closeAssignmentFile(this.selectedFile);
+            this.selectedFile.noteProperty().unbindBidirectional(noteView.textProperty());
+            noteView.clear();
+        }
+        this.selectedFile = newSelectedFile;
+        var disposable = watcher.openAssignmentFile(this.selectedFile)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(this.fileView::replaceText);
+        this.selectedFile.setFileContentListener(disposable);
+
+        noteView.setText(this.selectedFile.noteProperty().getValue());
+        this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
+
+        studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
     }
 
 }

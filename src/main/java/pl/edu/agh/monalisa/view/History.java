@@ -1,37 +1,63 @@
 package pl.edu.agh.monalisa.view;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.TreeItem;
 import pl.edu.agh.monalisa.model.GenericFile;
 
 import java.util.LinkedList;
 
 public class History {
-    private final LinkedList<TreeItem<GenericFile>> openFilesHistory = new LinkedList<>();
-    private int currentIndex = -1;
+    private final LinkedList<TreeItem<GenericFile>> itemStack = new LinkedList<>();
+    private final LinkedList<TreeItem<GenericFile>> undoneStack = new LinkedList<>();
+    private final BooleanProperty isUndoDisabled = new SimpleBooleanProperty(true);
+    private final BooleanProperty isRedoDisabled = new SimpleBooleanProperty(true);
+    private TreeItem<GenericFile> currentItem;
+
 
     public TreeItem<GenericFile> undo() {
-        return openFilesHistory.get(--currentIndex);
+        if (itemStack.isEmpty()) return null;
+        var item = itemStack.pop();
+        undoneStack.push(currentItem);
+        currentItem = item;
+
+        updateAvailability();
+        return item;
     }
 
     public TreeItem<GenericFile> redo() {
-        return openFilesHistory.get(++currentIndex);
+        if (undoneStack.isEmpty()) return null;
+        var item = undoneStack.pop();
+        itemStack.push(currentItem);
+        currentItem = item;
+
+        updateAvailability();
+        return item;
     }
 
-    public boolean canRedo() {
-        return currentIndex < openFilesHistory.size() - 1;
+    public BooleanProperty isRedoDisabled() {
+        return isRedoDisabled;
     }
 
-    public boolean canUndo() {
-        return currentIndex > 0;
+    public BooleanProperty isUndoDisabled() {
+        return isUndoDisabled;
     }
 
-    public void addToHistory(TreeItem<GenericFile> chosenFile) {
+    public void add(TreeItem<GenericFile> chosenFile) {
         // don't add to history after undo/redo:
-        if (currentIndex >= 0 && openFilesHistory.get(currentIndex) == chosenFile) return;
-        if (openFilesHistory.contains(chosenFile) && openFilesHistory.indexOf(chosenFile) < currentIndex) {
-            currentIndex--;
+        if (currentItem != null && currentItem.getValue() == chosenFile.getValue()) return;
+
+        if (currentItem != null) {
+            itemStack.push(currentItem);
+            undoneStack.clear();
+            isUndoDisabled.set(false);
+            isRedoDisabled.set(true);
         }
-        openFilesHistory.remove(chosenFile);
-        openFilesHistory.add(++currentIndex, chosenFile);
+        currentItem = chosenFile;
+    }
+
+    private void updateAvailability() {
+        isRedoDisabled.set(undoneStack.isEmpty());
+        isUndoDisabled.set(itemStack.isEmpty());
     }
 }

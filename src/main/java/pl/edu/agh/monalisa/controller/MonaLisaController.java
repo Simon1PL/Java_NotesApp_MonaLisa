@@ -4,9 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
@@ -14,6 +12,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
 import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.AssignmentFile;
+import pl.edu.agh.monalisa.model.GenericFile;
 import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
 import pl.edu.agh.monalisa.view.*;
@@ -75,10 +74,8 @@ public class MonaLisaController {
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                history.addToHistory(newValue);
+                history.add(newValue);
                 changeSelectedFile((AssignmentFile) newValue.getValue());
-                undoButton.setDisable(!history.canUndo());
-                redoButton.setDisable(!history.canRedo());
             }
         });
     }
@@ -115,10 +112,10 @@ public class MonaLisaController {
 
     private void initializeControls() {
         undoButton.setOnAction((actionEvent) -> handleUndo());
-        undoButton.setDisable(!history.canUndo());
+        undoButton.disableProperty().bind(history.isUndoDisabled());
 
         redoButton.setOnAction((actionEvent) -> handleRedo());
-        redoButton.setDisable(!history.canRedo());
+        redoButton.disableProperty().bind(history.isRedoDisabled());
     }
 
     @FXML
@@ -132,13 +129,13 @@ public class MonaLisaController {
     }
 
     private void handleUndo() {
-        if (history.canUndo()) {
+        if (!history.isUndoDisabled().getValue()) {
             fileTree.getSelectionModel().select(this.history.undo());
         }
     }
 
     private void handleRedo() {
-        if (history.canRedo()) {
+        if (!history.isRedoDisabled().getValue()) {
             fileTree.getSelectionModel().select(this.history.redo());
         }
     }

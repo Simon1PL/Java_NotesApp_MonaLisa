@@ -5,6 +5,7 @@
 <?import org.fxmisc.richtext.*?>
 
 <?import pl.edu.agh.monalisa.view.FileTree?>
+<?import javafx.geometry.Insets?>
 <Pane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
     <children>
@@ -38,7 +39,11 @@
                                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <children>
-                                                <Label text="Label"/>
+                                                <Label fx:id="studentListLabel" text="">
+                                                    <VBox.margin>
+                                                        <Insets top="10" bottom="10"/>
+                                                    </VBox.margin>
+                                                </Label>
                                                 <ListView fx:id="studentListView" maxHeight="Infinity" prefWidth="200.0"
                                                           VBox.vgrow="ALWAYS"/>
                                             </children>

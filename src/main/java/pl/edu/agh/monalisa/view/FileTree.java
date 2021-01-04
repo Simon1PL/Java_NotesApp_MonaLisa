@@ -3,15 +3,16 @@ package pl.edu.agh.monalisa.view;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import pl.edu.agh.monalisa.model.*;
 import pl.edu.agh.monalisa.model.Package;
+import pl.edu.agh.monalisa.model.*;
 
 public class FileTree extends TreeView<GenericFile> {
 
     public void setModel(Root model) {
+        var cellFactory = new FileCellFactory(model);
         setRoot(new TreeItem<>(model));
         setShowRoot(false);
-
+        setCellFactory(cellFactory::createCell);
         loadModel(model);
     }
 

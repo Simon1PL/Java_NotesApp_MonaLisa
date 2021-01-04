@@ -4,7 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
@@ -12,7 +15,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
 import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.AssignmentFile;
-import pl.edu.agh.monalisa.model.GenericFile;
 import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
 import pl.edu.agh.monalisa.view.*;
@@ -48,6 +50,16 @@ public class MonaLisaController {
     @FXML
     private ListView<Student> studentListView;
 
+    @FXML
+    private Label studentListLabel;
+
+    @FXML
+    private NoteList noteListView;
+
+    @FXML
+    private Label noteListLabel;
+
+
     @Inject
     public MonaLisaController(Loader loader, FilesystemWatcher watcher) {
         this.loader = loader;
@@ -62,9 +74,9 @@ public class MonaLisaController {
         initializeFileTreeSelectionListener();
         initializeCodeView();
         initializeStudentView();
+        initializeNoteList();
         initializeControls();
     }
-
 
     private void initializeFileTree() {
         model = loader.loadModel(this.rootPath);
@@ -75,7 +87,10 @@ public class MonaLisaController {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
                 history.add(newValue);
-                changeSelectedFile((AssignmentFile) newValue.getValue());
+                var assignmentFile = (AssignmentFile) newValue.getValue();
+                changeSelectedFile(assignmentFile);
+                updateNoteList();
+                updatePathLabels(assignmentFile);
             }
         });
     }
@@ -104,8 +119,8 @@ public class MonaLisaController {
                 .subscribe(this.fileView::replaceText);
         this.selectedFile.setFileContentListener(disposable);
 
-        noteView.setText(this.selectedFile.noteProperty().getValue());
-        this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
+                noteView.setText(this.selectedFile.noteProperty().getValue());
+                this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
 
         studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
     }
@@ -139,4 +154,28 @@ public class MonaLisaController {
             fileTree.getSelectionModel().select(this.history.redo());
         }
     }
+    private void updatePathLabels(AssignmentFile file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        var path = model.getPath()
+                .relativize(file.getPath())
+                .getParent()//student
+                .getParent();//lab
+
+        var iterator = path.iterator();
+        while (iterator.hasNext()) {
+            stringBuilder.append(iterator.next().toString());
+            if (iterator.hasNext()) stringBuilder.append(" > ");
+        }
+        studentListLabel.setText(stringBuilder.toString());
+        noteListLabel.setText(stringBuilder.toString());
+    }
+
+    private void updateNoteList() {
+        noteListView.setSelectedFile(this.selectedFile);
+    }
+
+    private void initializeNoteList() {
+        noteListView.setOnShowClicked(this::changeSelectedFile);
+    }
+
 }

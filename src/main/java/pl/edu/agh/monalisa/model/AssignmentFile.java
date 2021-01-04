@@ -1,16 +1,8 @@
 package pl.edu.agh.monalisa.model;
 
-import com.google.gson.Gson;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum;
-import pl.edu.agh.monalisa.constants.AvailableExtensionsEnum.AvailableExtensions;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class AssignmentFile extends RegularFile {
     //    private AvailableExtensions extension;
@@ -26,7 +18,7 @@ public class AssignmentFile extends RegularFile {
         this.parent = parent;
         this.note = new SimpleStringProperty();
 
-        //TODO revisit/delete
+        //TODO delete
 //        this.extension = AvailableExtensionsEnum.getExtension(name);
 //        this.loadTextFromFile();
 //        this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");

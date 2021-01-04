@@ -1,4 +1,4 @@
-//Student2
+//Student1
 class Main {
 
     public static void main(String... args) {

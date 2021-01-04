@@ -51,9 +51,15 @@
                 </TabPane>
                 <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
                     <children>
-                        <HBox style="-fx-alignment: center;">
-                            <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;"/>
-                            <Button fx:id="redoButton" mnemonicParsing="false" text="Redo" style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;"/>
+                        <HBox style="-fx-alignment: baseline-right;">
+                            <Button fx:id="undoButton" mnemonicParsing="false" text="Previous"
+                                    style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;">
+                                <tooltip><Tooltip text="Alt + left arrow"/></tooltip>
+                            </Button>
+                            <Button fx:id="redoButton" mnemonicParsing="false" text="Next"
+                                    style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;">
+                                <tooltip><Tooltip text="Alt + right arrow"/></tooltip>
+                            </Button>
                         </HBox>
                         <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
                                   VBox.vgrow="ALWAYS"/>

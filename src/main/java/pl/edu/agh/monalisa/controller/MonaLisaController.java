@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
@@ -64,37 +63,7 @@ public class MonaLisaController {
         initializeFileTreeSelectionListener();
         initializeCodeView();
         initializeStudentView();
-
-        undoButton.setOnAction((actionEvent) -> {
-            if (history.canUndo()) {
-                fileTree.getSelectionModel().select(this.history.undo());
-            }
-        });
-        undoButton.setTooltip(new Tooltip("Alt + left arrow"));
-        undoButton.setDisable(!history.canUndo());
-
-        redoButton.setOnAction((actionEvent) -> {
-            if (history.canRedo()) {
-                fileTree.getSelectionModel().select(this.history.redo());
-            }
-        });
-        redoButton.setTooltip(new Tooltip("Alt + right arrow"));
-        redoButton.setDisable(!history.canRedo());
-    }
-
-    @FXML
-    private void handleOnKeyReleased(KeyEvent event)
-    {
-        if (event.getCode() == KeyCode.LEFT && event.isAltDown()) {
-            if (history.canUndo()) {
-                fileTree.getSelectionModel().select(this.history.undo());
-            }
-        }
-        if (event.getCode() == KeyCode.RIGHT && event.isAltDown()) {
-            if (history.canRedo()) {
-                fileTree.getSelectionModel().select(this.history.redo());
-            }
-        }
+        initializeControls();
     }
 
 
@@ -122,7 +91,7 @@ public class MonaLisaController {
 
     }
 
-    private void initializeStudentView(){
+    private void initializeStudentView() {
         studentListView.setCellFactory(param -> new StudentCell());
     }
 
@@ -144,4 +113,33 @@ public class MonaLisaController {
         studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
     }
 
+    private void initializeControls() {
+        undoButton.setOnAction((actionEvent) -> handleUndo());
+        undoButton.setDisable(!history.canUndo());
+
+        redoButton.setOnAction((actionEvent) -> handleRedo());
+        redoButton.setDisable(!history.canRedo());
+    }
+
+    @FXML
+    private void handleOnKeyReleased(KeyEvent event) {
+        if (event.getCode() == KeyCode.LEFT && event.isAltDown()) {
+            handleUndo();
+        }
+        if (event.getCode() == KeyCode.RIGHT && event.isAltDown()) {
+            handleRedo();
+        }
+    }
+
+    private void handleUndo() {
+        if (history.canUndo()) {
+            fileTree.getSelectionModel().select(this.history.undo());
+        }
+    }
+
+    private void handleRedo() {
+        if (history.canRedo()) {
+            fileTree.getSelectionModel().select(this.history.redo());
+        }
+    }
 }

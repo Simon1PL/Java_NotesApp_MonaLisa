@@ -8,8 +8,10 @@ public class StudentCell extends ListCell<Student> {
     @Override
     protected void updateItem(Student item, boolean empty) {
         super.updateItem(item, empty);
-        if (item != null) {
+        if (item != null && !empty) {
             setText(item.getName());
+        } else {
+            setText("");
         }
     }
 }

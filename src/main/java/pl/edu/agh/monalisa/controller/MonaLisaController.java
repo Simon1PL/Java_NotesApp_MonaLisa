@@ -14,10 +14,7 @@ import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.AssignmentFile;
 import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
-import pl.edu.agh.monalisa.view.FileTree;
-import pl.edu.agh.monalisa.view.GenericSyntaxHighlighter;
-import pl.edu.agh.monalisa.view.StudentCell;
-import pl.edu.agh.monalisa.view.VisibleParagraphStyler;
+import pl.edu.agh.monalisa.view.*;
 
 import java.nio.file.Path;
 
@@ -44,7 +41,13 @@ public class MonaLisaController {
     private ListView<Student> studentListView;
 
     @FXML
-    public Label studentListLabel;
+    private Label studentListLabel;
+
+    @FXML
+    private NoteList noteListView;
+
+    @FXML
+    private Label noteListLabel;
 
 
     @Inject
@@ -74,7 +77,8 @@ public class MonaLisaController {
             if (newValue.getValue() instanceof AssignmentFile) {
                 var assignmentFile = (AssignmentFile) newValue.getValue();
                 showAssignmentFile(assignmentFile);
-                updateStudentListLabel(assignmentFile);
+                updateNoteList();
+                updatePathLabels(assignmentFile);
             }
         });
     }
@@ -109,7 +113,7 @@ public class MonaLisaController {
         studentListView.setCellFactory(param -> new StudentCell());
     }
 
-    private void updateStudentListLabel(AssignmentFile file) {
+    private void updatePathLabels(AssignmentFile file) {
         StringBuilder stringBuilder = new StringBuilder();
         var path = model.getPath()
                 .relativize(file.getPath())
@@ -122,6 +126,11 @@ public class MonaLisaController {
             if (iterator.hasNext()) stringBuilder.append(" > ");
         }
         studentListLabel.setText(stringBuilder.toString());
+        noteListLabel.setText(stringBuilder.toString());
+    }
+
+    private void updateNoteList() {
+        noteListView.setSelectedFile(this.selectedFile);
     }
 
 }

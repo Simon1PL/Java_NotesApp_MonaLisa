@@ -2,7 +2,6 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import pl.edu.agh.monalisa.model.Package;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class Loader {
-    private Root root;
     private final FilesystemWatcher filesystemListener;
     private final NoteLoader noteLoader;
 
@@ -40,9 +38,7 @@ public class Loader {
                 });
     }
 
-    //TODO check
-    @Inject
-    public Root loadModel(@Named("RootPath") Path rootPath) {
+    public Root loadModel(Path rootPath) {
         var files = rootPath.toFile().listFiles();
         if (files == null) throw new IllegalArgumentException("Root path must be a directory");
 
@@ -51,7 +47,7 @@ public class Loader {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        root = new Root(rootPath.getFileName().toString(), rootPath.getParent(), years);
+        Root root = new Root(rootPath.getFileName().toString(), rootPath.getParent(), years);
 
         registerPackageListener(root, FileType.DIRECTORY, this::loadYear);
         return root;
@@ -112,7 +108,7 @@ public class Loader {
 
         Arrays.stream(assignmentFiles)
                 .filter(File::isFile)
-                .filter(file -> !file.toString().endsWith(Note.NOTE_EXTENSION))
+                .filter(file -> !file.toString().endsWith(NoteLoader.NOTE_EXTENSION))
                 .map(file -> new AssignmentFile(file.getName(), student))
                 .forEach(student::addChild);
 

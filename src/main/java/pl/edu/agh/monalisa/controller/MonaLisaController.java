@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.CodeArea;
@@ -38,13 +38,14 @@ public class MonaLisaController {
     private CodeArea fileView;
 
     @FXML
-    private Button addNoteButton;
-
-    @FXML
     private TextArea noteView;
 
     @FXML
     private ListView<Student> studentListView;
+
+    @FXML
+    public Label studentListLabel;
+
 
     @Inject
     public MonaLisaController(Loader loader, FilesystemWatcher watcher) {
@@ -61,10 +62,6 @@ public class MonaLisaController {
         initializeCodeView();
         initializeStudentView();
 
-//        addNoteButton.setOnAction((actionEvent) -> {
-//            if (this.selectedFile != null) this.selectedFile.addNote(new Note(this.notesAmount++, "title", "NOTE"));
-//        });
-
     }
 
     private void initializeFileTree() {
@@ -75,23 +72,29 @@ public class MonaLisaController {
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                if (this.selectedFile != null) {
-                    watcher.closeAssignmentFile(this.selectedFile);
-                    this.selectedFile.noteProperty().unbindBidirectional(noteView.textProperty());
-                    noteView.clear();
-                }
-                this.selectedFile = (AssignmentFile) newValue.getValue();
-                var disposable = watcher.openAssignmentFile(this.selectedFile)
-                        .observeOn(JavaFxScheduler.platform())
-                        .subscribe(this.fileView::replaceText);
-                this.selectedFile.setFileContentListener(disposable);
-
-                noteView.setText(this.selectedFile.noteProperty().getValue());
-                this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
-
-                studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
+                var assignmentFile = (AssignmentFile) newValue.getValue();
+                showAssignmentFile(assignmentFile);
+                updateStudentListLabel(assignmentFile);
             }
         });
+    }
+
+    private void showAssignmentFile(AssignmentFile file) {
+        if (this.selectedFile != null) {
+            watcher.closeAssignmentFile(this.selectedFile);
+            this.selectedFile.noteProperty().unbindBidirectional(noteView.textProperty());
+            noteView.clear();
+        }
+        this.selectedFile = file;
+        var disposable = watcher.openAssignmentFile(this.selectedFile)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(this.fileView::replaceText);
+        this.selectedFile.setFileContentListener(disposable);
+
+        noteView.setText(this.selectedFile.noteProperty().getValue());
+        this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
+
+        studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
     }
 
     private void initializeCodeView() {
@@ -102,8 +105,23 @@ public class MonaLisaController {
 
     }
 
-    private void initializeStudentView(){
+    private void initializeStudentView() {
         studentListView.setCellFactory(param -> new StudentCell());
+    }
+
+    private void updateStudentListLabel(AssignmentFile file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        var path = model.getPath()
+                .relativize(file.getPath())
+                .getParent()//student
+                .getParent();//lab
+
+        var iterator = path.iterator();
+        while (iterator.hasNext()) {
+            stringBuilder.append(iterator.next().toString());
+            if (iterator.hasNext()) stringBuilder.append(" > ");
+        }
+        studentListLabel.setText(stringBuilder.toString());
     }
 
 }

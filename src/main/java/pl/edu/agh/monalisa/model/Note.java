@@ -1,7 +1,7 @@
 package pl.edu.agh.monalisa.model;
 
+//TODO this is never used
 public class Note {
-    public static String NOTE_EXTENSION = ".note";
 
     private int line;
     private String title;

@@ -7,7 +7,7 @@
 <?import pl.edu.agh.monalisa.view.FileTree?>
 <?import javafx.geometry.Insets?>
 <?import pl.edu.agh.monalisa.view.NoteList?>
-<Pane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<Pane onKeyReleased="#handleOnKeyReleased" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
     <children>
         <HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -74,6 +74,16 @@
                 </TabPane>
                 <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
                     <children>
+                        <HBox style="-fx-alignment: baseline-right;">
+                            <Button fx:id="undoButton" mnemonicParsing="false" text="Previous"
+                                    style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;">
+                                <tooltip><Tooltip text="Alt + left arrow"/></tooltip>
+                            </Button>
+                            <Button fx:id="redoButton" mnemonicParsing="false" text="Next"
+                                    style="-fx-padding: 10px; -fx-border-insets: 5px; -fx-background-insets: 5px;">
+                                <tooltip><Tooltip text="Alt + right arrow"/></tooltip>
+                            </Button>
+                        </HBox>
                         <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
                                   VBox.vgrow="ALWAYS"/>
                         <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>

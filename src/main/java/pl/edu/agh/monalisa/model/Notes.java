@@ -3,6 +3,7 @@ package pl.edu.agh.monalisa.model;
 import java.util.Collection;
 import java.util.HashSet;
 
+//TODO this is never used
 public class Notes {
     private Collection<Note> notes = new HashSet<>();
 

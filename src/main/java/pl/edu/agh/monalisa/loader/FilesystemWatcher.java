@@ -14,7 +14,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class FilesystemWatcher {
 
-    public Observable<FileSystemEvent> register(Package pkg, FileType fileType) {
+    public Observable<FileSystemEvent> register(Package<?> pkg, FileType fileType) {
         Observable<FileSystemEvent> observable = Observable.create(subscriber -> {
             try (WatchService watcher = pkg.getPath().getFileSystem().newWatchService()) {
                 pkg.getPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
@@ -23,7 +23,7 @@ public class FilesystemWatcher {
                     WatchKey key = watcher.take();
                     for (WatchEvent<?> event : key.pollEvents()) {
                         var targetPath = pkg.getPath().resolve((Path) event.context());
-                        if (targetPath.toString().endsWith(Note.NOTE_EXTENSION)) continue;
+                        if (targetPath.toString().endsWith(NoteLoader.NOTE_EXTENSION)) continue;
                         if (event.kind() == ENTRY_CREATE && fileType == FileType.fromFile(targetPath.toFile()))
                             subscriber.onNext(new FileSystemEvent(targetPath, FileSystemEvent.EventKind.CREATED));
                         else if (event.kind() == ENTRY_DELETE)

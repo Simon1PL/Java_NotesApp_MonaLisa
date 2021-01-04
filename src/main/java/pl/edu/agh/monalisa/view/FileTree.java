@@ -1,19 +1,10 @@
 package pl.edu.agh.monalisa.view;
 
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.TransferMode;
-import pl.edu.agh.monalisa.model.*;
 import pl.edu.agh.monalisa.model.Package;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
+import pl.edu.agh.monalisa.model.*;
 
 public class FileTree extends TreeView<GenericFile> {
 

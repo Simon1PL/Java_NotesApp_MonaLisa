@@ -4,7 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 public abstract class GenericFile {
-    private String name;
+    private final String name;
     private final Path path;
 
     public GenericFile(String name, Path parentDirectoryPath) {

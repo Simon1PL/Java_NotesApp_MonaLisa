@@ -2,13 +2,11 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
-import pl.edu.agh.monalisa.model.Lab;
-import pl.edu.agh.monalisa.model.Subject;
-import pl.edu.agh.monalisa.model.Year;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,16 +14,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoaderTest {
 
-    private static final Path tmpPath = Path.of("testTmp");
 
-    @BeforeEach
-    void setupTmp() throws IOException {
-        tmpPath.toFile().mkdir();
-        var year = tmpPath.resolve("2018");
+    void setupTmp(Path temp) throws IOException {
+        temp.toFile().mkdir();
+        var year = temp.resolve("2018");
         year.toFile().mkdir();
 
         var subject = year.resolve("WDI");
@@ -40,61 +36,28 @@ public class LoaderTest {
         student.resolve("main.py").toFile().createNewFile();
     }
 
-    @AfterEach
-    void deleteTmp() throws IOException {
-        Files.walk(tmpPath)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);
-    }
-
-
     @Test
-    public void initialModelLoads() {
+    public void initialModelLoads(@TempDir Path temp) throws IOException {
+        //given
+        setupTmp(temp);
         Injector injector = Guice.createInjector(new MonaLisaModule());
         var loader = injector.getInstance(Loader.class);
 
-        var model = loader.loadModel(tmpPath);
 
+        //when
+        var model = loader.loadModel(temp);
         var year = model.getChildren().get(0);
-        assertEquals(year.getName(), "2018");
-
-
         var subject = year.getChildren().get(0);
-        assertEquals(subject.getName(), "WDI");
-
-
         var lab = subject.getChildren().get(0);
-        assertEquals(lab.getName(), "Lab1");
-
         var student = lab.getChildren().get(0);
+
+        //then
+        assertEquals(year.getName(), "2018");
+        assertEquals(subject.getName(), "WDI");
+        assertEquals(lab.getName(), "Lab1");
         assertEquals(student.getName(), "Student1");
 
         assertEquals(student.getChildren().get(0).getName(), "main.py");
     }
 
-    public void modelUpdatedOnDirectoryCreated(){
-        Injector injector = Guice.createInjector(new MonaLisaModule());
-        var loader = injector.getInstance(Loader.class);
-
-        var model = loader.loadModel(tmpPath);
-
-        model.getPath().resolve("2019").toFile().mkdir();
-
-        assertEquals(2, model.getChildren().size());
-    }
-
-    public void modelUpdatesOnFileDeleted(){
-        Injector injector = Guice.createInjector(new MonaLisaModule());
-        var loader = injector.getInstance(Loader.class);
-
-        var model = loader.loadModel(tmpPath);
-    }
-
-    public void modelNotUpdatedOnIncorrectFolderStructure(){
-        Injector injector = Guice.createInjector(new MonaLisaModule());
-        var loader = injector.getInstance(Loader.class);
-
-        var model = loader.loadModel(tmpPath);
-    }
 }

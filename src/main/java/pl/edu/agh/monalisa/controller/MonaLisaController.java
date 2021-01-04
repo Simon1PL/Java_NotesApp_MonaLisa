@@ -64,6 +64,7 @@ public class MonaLisaController {
         initializeFileTreeSelectionListener();
         initializeCodeView();
         initializeStudentView();
+        initializeNoteList();
 
     }
 
@@ -131,6 +132,10 @@ public class MonaLisaController {
 
     private void updateNoteList() {
         noteListView.setSelectedFile(this.selectedFile);
+    }
+
+    private void initializeNoteList() {
+        noteListView.setOnShowClicked(this::showAssignmentFile);
     }
 
 }

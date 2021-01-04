@@ -3,7 +3,6 @@ package pl.edu.agh.monalisa.loader;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import pl.edu.agh.monalisa.model.AssignmentFile;
-import pl.edu.agh.monalisa.model.Note;
 import pl.edu.agh.monalisa.model.Package;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ public class FilesystemWatcher {
     public Observable<FileSystemEvent> register(Package<?> pkg, FileType fileType) {
         Observable<FileSystemEvent> observable = Observable.create(subscriber -> {
             try (WatchService watcher = pkg.getPath().getFileSystem().newWatchService()) {
-                pkg.getPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                pkg.getPath().register(watcher, ENTRY_CREATE, ENTRY_DELETE);
 
                 while (!subscriber.isDisposed()) {
                     WatchKey key = watcher.take();

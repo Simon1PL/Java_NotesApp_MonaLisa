@@ -3,16 +3,17 @@ package pl.edu.agh.monalisa.controller;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.TreeItem;
+import pl.edu.agh.monalisa.model.AssignmentFile;
 import pl.edu.agh.monalisa.model.GenericFile;
 
 import java.util.LinkedList;
 
 public class History {
-    private final LinkedList<GenericFile> itemStack = new LinkedList<>();
-    private final LinkedList<GenericFile> undoneStack = new LinkedList<>();
+    private final LinkedList<AssignmentFile> itemStack = new LinkedList<>();
+    private final LinkedList<AssignmentFile> undoneStack = new LinkedList<>();
     private final BooleanProperty isUndoDisabled = new SimpleBooleanProperty(true);
     private final BooleanProperty isRedoDisabled = new SimpleBooleanProperty(true);
-    private GenericFile currentItem;
+    private AssignmentFile currentItem;
 
 
     public GenericFile undo() {
@@ -43,7 +44,7 @@ public class History {
         return isUndoDisabled;
     }
 
-    public void add(GenericFile chosenFile) {
+    public void add(AssignmentFile chosenFile) {
         // don't add to history after undo/redo:
         if (currentItem != null && currentItem == chosenFile) return;
 

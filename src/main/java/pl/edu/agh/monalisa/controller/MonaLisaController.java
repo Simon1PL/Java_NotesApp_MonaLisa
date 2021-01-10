@@ -86,7 +86,7 @@ public class MonaLisaController {
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                history.add(newValue);
+                history.add(newValue.getValue());
                 var assignmentFile = (AssignmentFile) newValue.getValue();
                 changeSelectedFile(assignmentFile);
             }
@@ -145,13 +145,13 @@ public class MonaLisaController {
 
     private void handleUndo() {
         if (!history.isUndoDisabled().getValue()) {
-            fileTree.getSelectionModel().select(this.history.undo());
+            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), this.history.undo()));
         }
     }
 
     private void handleRedo() {
         if (!history.isRedoDisabled().getValue()) {
-            fileTree.getSelectionModel().select(this.history.redo());
+            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), this.history.redo()));
         }
     }
     private void updatePathLabels(AssignmentFile file) {

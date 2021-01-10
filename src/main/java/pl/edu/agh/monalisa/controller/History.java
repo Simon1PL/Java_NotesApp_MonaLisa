@@ -8,14 +8,14 @@ import pl.edu.agh.monalisa.model.GenericFile;
 import java.util.LinkedList;
 
 public class History {
-    private final LinkedList<TreeItem<GenericFile>> itemStack = new LinkedList<>();
-    private final LinkedList<TreeItem<GenericFile>> undoneStack = new LinkedList<>();
+    private final LinkedList<GenericFile> itemStack = new LinkedList<>();
+    private final LinkedList<GenericFile> undoneStack = new LinkedList<>();
     private final BooleanProperty isUndoDisabled = new SimpleBooleanProperty(true);
     private final BooleanProperty isRedoDisabled = new SimpleBooleanProperty(true);
-    private TreeItem<GenericFile> currentItem;
+    private GenericFile currentItem;
 
 
-    public TreeItem<GenericFile> undo() {
+    public GenericFile undo() {
         if (itemStack.isEmpty()) return null;
         var item = itemStack.pop();
         undoneStack.push(currentItem);
@@ -25,7 +25,7 @@ public class History {
         return item;
     }
 
-    public TreeItem<GenericFile> redo() {
+    public GenericFile redo() {
         if (undoneStack.isEmpty()) return null;
         var item = undoneStack.pop();
         itemStack.push(currentItem);
@@ -43,9 +43,9 @@ public class History {
         return isUndoDisabled;
     }
 
-    public void add(TreeItem<GenericFile> chosenFile) {
+    public void add(GenericFile chosenFile) {
         // don't add to history after undo/redo:
-        if (currentItem != null && currentItem.getValue() == chosenFile.getValue()) return;
+        if (currentItem != null && currentItem == chosenFile) return;
 
         if (currentItem != null) {
             itemStack.push(currentItem);

@@ -25,6 +25,6 @@ public class MonaLisaModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Path.class).annotatedWith(Names.named("RootPath")).toInstance(Path.of("MonaLisa"));
+        bind(Path.class).annotatedWith(Names.named("StarterRootPath")).toInstance(Path.of("MonaLisa"));
     }
 }

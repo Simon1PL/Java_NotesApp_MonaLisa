@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import pl.edu.agh.monalisa.controller.MonaLisaController;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
 import pl.edu.agh.monalisa.model.*;
 
@@ -27,8 +28,8 @@ public class MonaLisaApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         Injector injector = Guice.createInjector(new MonaLisaModule());
 
-        if (!injector.getInstance(Key.get(Path.class, Names.named("RootPath"))).toFile().exists()) {
-            createExampleData(injector.getInstance(Key.get(Path.class, Names.named("RootPath"))));
+        if (!injector.getInstance(Key.get(Path.class, Names.named("StarterRootPath"))).toFile().exists()) {
+            createExampleData(injector.getInstance(Key.get(Path.class, Names.named("StarterRootPath"))));
         }
 
         var fxmlLoader = new FXMLLoader();
@@ -36,6 +37,8 @@ public class MonaLisaApplication extends Application {
 
         fxmlLoader.setLocation(MonaLisaApplication.class.getResource("view/monalisa.fxml"));
         Parent parent = fxmlLoader.load();
+        MonaLisaController controller = fxmlLoader.getController();
+        controller.setStage(primaryStage);
         primaryStage.setScene(new Scene(parent));
         primaryStage.setTitle("MonaLisa");
         primaryStage.show();

@@ -61,13 +61,18 @@
             </TabPane>
         </VBox>
             <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
-                <HBox style="-fx-alignment: baseline-right;" spacing="10">
-                    <Button fx:id="undoButton" mnemonicParsing="false" text="Previous">
-                        <tooltip><Tooltip text="Alt + left arrow"/></tooltip>
+                <HBox spacing="10">
+                    <Button fx:id="rootPathButton" mnemonicParsing="false" text="Choose file database">
                     </Button>
-                    <Button fx:id="redoButton" mnemonicParsing="false" text="Next">
-                        <tooltip><Tooltip text="Alt + right arrow"/></tooltip>
-                    </Button>
+                    <Region HBox.hgrow="ALWAYS"></Region>
+                    <HBox spacing="10">
+                        <Button fx:id="undoButton" mnemonicParsing="false" text="Previous">
+                            <tooltip><Tooltip text="Alt + left arrow"/></tooltip>
+                        </Button>
+                        <Button fx:id="redoButton" mnemonicParsing="false" text="Next">
+                            <tooltip><Tooltip text="Alt + right arrow"/></tooltip>
+                        </Button>
+                    </HBox>
                 </HBox>
                 <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
                           VBox.vgrow="ALWAYS"/>

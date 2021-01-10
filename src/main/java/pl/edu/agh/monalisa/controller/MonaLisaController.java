@@ -10,6 +10,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
@@ -19,11 +21,12 @@ import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
 import pl.edu.agh.monalisa.view.*;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public class MonaLisaController {
     @Inject
-    @Named("RootPath")
+    @Named("StarterRootPath")
     private Path rootPath;
 
     private final Loader loader;
@@ -43,6 +46,9 @@ public class MonaLisaController {
 
     @FXML
     private Button redoButton;
+
+    @FXML
+    private Button rootPathButton;
 
     @FXML
     private TextArea noteView;
@@ -76,6 +82,11 @@ public class MonaLisaController {
         initializeStudentView();
         initializeNoteList();
         initializeControls();
+    }
+
+    private Stage myStage;
+    public void setStage(Stage stage) {
+        myStage = stage;
     }
 
     private void initializeFileTree() {
@@ -131,6 +142,16 @@ public class MonaLisaController {
 
         redoButton.setOnAction((actionEvent) -> handleRedo());
         redoButton.disableProperty().bind(history.isRedoDisabled());
+
+        rootPathButton.setOnAction((actionEvent) -> {
+            DirectoryChooser fileChooser = new DirectoryChooser();
+            fileChooser.setTitle("Open Resource File");
+            File selectedDirectory = fileChooser.showDialog(myStage);
+            if (selectedDirectory != null) {
+                this.rootPath = selectedDirectory.toPath();
+                this.initializeFileTree();
+            }
+        });
     }
 
     @FXML

@@ -5,10 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class AssignmentFile extends RegularFile {
-    //    private AvailableExtensions extension;
-    //    private Notes notes = new Notes();//not used currently
 //    private String text;
-//    private Path notesPath;
     private Disposable fileContentListener;
     private final StringProperty note;
     private final Student parent;
@@ -17,18 +14,7 @@ public class AssignmentFile extends RegularFile {
         super(name, parent.getPath());
         this.parent = parent;
         this.note = new SimpleStringProperty();
-
-        //TODO delete
-//        this.extension = AvailableExtensionsEnum.getExtension(name);
 //        this.loadTextFromFile();
-//        this.notesPath = this.getPath().getParent().resolve(this.getName().replace(".", "") + "notes.json");
-//        try {
-//            if (this.notesPath.toFile().exists()) {
-//                this.notes = new Gson().fromJson(Files.readString(this.notesPath), Notes.class);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public Disposable getFileContentListener() {
@@ -51,38 +37,9 @@ public class AssignmentFile extends RegularFile {
         return parent;
     }
 
-    //TODO delete
 //    public void loadTextFromFile() {
 //        try {
 //            this.text = this.getPath().toFile().exists() ? Files.readString(this.getPath()) : "";
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void addNote(Note note) {
-//        this.notes.addNote(note);
-//        this.saveNotes();
-//    }
-//
-//    public void removeNote(Note note) {
-//        this.notes.removeNote(note);
-//        this.saveNotes();
-//    }
-//
-//    public void editNote(Note note) {
-//        this.notes.editNote(note);
-//        this.saveNotes();
-//    }
-//
-//    public void saveNotes() {
-//        try {
-//            if (!this.notesPath.toFile().exists()) {
-//                this.notesPath.toFile().createNewFile();
-//            }
-//            FileWriter fileWriter = new FileWriter(this.notesPath.toFile());
-//            fileWriter.write(new Gson().toJson(this.notes));
-//            fileWriter.close();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

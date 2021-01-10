@@ -1,6 +1,8 @@
 package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Guice;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
@@ -10,6 +12,7 @@ import pl.edu.agh.monalisa.model.Package;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,14 +30,13 @@ public class FilesystemWatcherTest {
         var testFilePath = temp.resolve(Path.of("test"));
 
         //when
-        var testObserver = watcher.register(pkg, FileType.DIRECTORY)
-                .test();
+        var testObserver = watcher.register(pkg, FileType.DIRECTORY).test();
         Thread.sleep(1000);
         Files.createDirectory(testFilePath);
-        Thread.sleep(1000);
 
         //then
         testObserver
+                .awaitCount(1)
                 .assertNoErrors()
                 .assertValue(fileSystemEvent ->
                         fileSystemEvent.getKind() == FileSystemEvent.EventKind.CREATED
@@ -58,10 +60,10 @@ public class FilesystemWatcherTest {
         Thread.sleep(1000);
         Files.createDirectory(temp.resolve(Path.of("test")));
         Files.createFile(testFilePath);
-        Thread.sleep(1000);
 
         //then
         testObserver
+                .awaitCount(1)
                 .assertNoErrors()
                 .assertValueCount(1)
                 .assertValue(fileSystemEvent -> fileSystemEvent.getTarget().equals(testFilePath));
@@ -81,10 +83,10 @@ public class FilesystemWatcherTest {
                 .test();
         Thread.sleep(1000);
         Files.createFile(testFilePath);
-        Thread.sleep(1000);
 
         //then
         testObserver
+                .awaitCount(1)
                 .assertNoErrors()
                 .assertEmpty();
     }
@@ -103,10 +105,10 @@ public class FilesystemWatcherTest {
         //when
         var testObserver = watcher.openAssignmentFile(assignment)
                 .test();
-        Thread.sleep(1000);
 
         //then
         testObserver
+                .awaitCount(1)
                 .assertNoErrors()
                 .assertValue(fileContent);
     }
@@ -127,10 +129,10 @@ public class FilesystemWatcherTest {
                 .test();
         Thread.sleep(1000);
         Files.writeString(testFilePath, fileContent);
-        Thread.sleep(1000);
 
         //then
         testObserver
+                .awaitCount(2)
                 .assertNoErrors()
                 .assertValueAt(1, fileContent);
     }

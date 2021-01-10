@@ -154,6 +154,7 @@ public class MonaLisaController {
             fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), this.history.redo()));
         }
     }
+
     private void updatePathLabels(AssignmentFile file) {
         StringBuilder stringBuilder = new StringBuilder();
         var path = model.getPath()

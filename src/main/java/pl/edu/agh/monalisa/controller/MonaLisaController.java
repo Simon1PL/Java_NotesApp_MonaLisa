@@ -89,8 +89,6 @@ public class MonaLisaController {
                 history.add(newValue);
                 var assignmentFile = (AssignmentFile) newValue.getValue();
                 changeSelectedFile(assignmentFile);
-                updateNoteList();
-                updatePathLabels(assignmentFile);
             }
         });
     }
@@ -119,10 +117,12 @@ public class MonaLisaController {
                 .subscribe(this.fileView::replaceText);
         this.selectedFile.setFileContentListener(disposable);
 
-                noteView.setText(this.selectedFile.noteProperty().getValue());
-                this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
+        noteView.setText(this.selectedFile.noteProperty().getValue());
+        this.selectedFile.noteProperty().bindBidirectional(noteView.textProperty());
 
         studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
+        updateNoteList();
+        updatePathLabels(newSelectedFile);
     }
 
     private void initializeControls() {
@@ -175,7 +175,10 @@ public class MonaLisaController {
     }
 
     private void initializeNoteList() {
-        noteListView.setOnShowClicked(this::changeSelectedFile);
+        noteListView.setOnShowClicked(newSelectedFile -> {
+            changeSelectedFile(newSelectedFile);
+            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), newSelectedFile));
+        });
     }
 
 }

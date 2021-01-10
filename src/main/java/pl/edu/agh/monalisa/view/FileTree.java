@@ -79,4 +79,17 @@ public class FileTree extends TreeView<GenericFile> {
                 });
             }
     }
+
+    public static TreeItem<GenericFile> getTreeViewItem(TreeItem<GenericFile> item, GenericFile value) {
+        if (item != null) {
+            if (item.getValue().equals(value)) return item;
+            for (TreeItem<GenericFile> child : item.getChildren()) {
+                TreeItem<GenericFile> s = getTreeViewItem(child, value);
+                if (s != null) {
+                    return s;
+                }
+            }
+        }
+        return null;
+    }
 }

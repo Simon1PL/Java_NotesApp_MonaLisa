@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import pl.edu.agh.monalisa.controller.MonaLisaController;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
 import pl.edu.agh.monalisa.model.*;
 
@@ -37,8 +36,6 @@ public class MonaLisaApplication extends Application {
 
         fxmlLoader.setLocation(MonaLisaApplication.class.getResource("view/monalisa.fxml"));
         Parent parent = fxmlLoader.load();
-        MonaLisaController controller = fxmlLoader.getController();
-        controller.setStage(primaryStage);
         primaryStage.setScene(new Scene(parent));
         primaryStage.setTitle("MonaLisa");
         primaryStage.show();

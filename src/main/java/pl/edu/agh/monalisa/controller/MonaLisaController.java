@@ -77,18 +77,12 @@ public class MonaLisaController {
     @FXML
     public void initialize() {
         initializeFileTree();
-
         initializeFileTreeSelectionListener();
         initializeCodeView();
         initializeStudentView();
         initializeNoteList();
         initializeControls();
-    }
-
-    private Stage myStage;
-
-    public void setStage(Stage stage) {
-        myStage = stage;
+        initializeRootSelect();
     }
 
     private void initializeFileTree() {
@@ -99,8 +93,8 @@ public class MonaLisaController {
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getValue() instanceof AssignmentFile) {
-                history.add((AssignmentFile) newValue.getValue());
                 var assignmentFile = (AssignmentFile) newValue.getValue();
+                history.add(assignmentFile);
                 changeSelectedFile(assignmentFile);
             }
         });
@@ -144,11 +138,13 @@ public class MonaLisaController {
 
         redoButton.setOnAction((actionEvent) -> handleRedo());
         redoButton.disableProperty().bind(history.isRedoDisabled());
+    }
 
+    private void initializeRootSelect() {
         rootPathButton.setOnAction((actionEvent) -> {
             DirectoryChooser fileChooser = new DirectoryChooser();
             fileChooser.setTitle("Open Resource File");
-            File selectedDirectory = fileChooser.showDialog(myStage);
+            File selectedDirectory = fileChooser.showDialog(rootPathButton.getScene().getWindow());
             if (selectedDirectory != null) {
                 this.rootPath = selectedDirectory.toPath();
                 this.initializeFileTree();

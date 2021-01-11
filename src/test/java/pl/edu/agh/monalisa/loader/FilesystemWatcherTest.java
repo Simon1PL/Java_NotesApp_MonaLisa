@@ -1,8 +1,7 @@
 package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Guice;
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.core.Observer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import pl.edu.agh.monalisa.guice.MonaLisaModule;
@@ -14,14 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class FilesystemWatcherTest {
 
     @Test
-    public void register_shouldSendCreatedEvent(@TempDir Path temp) throws IOException, InterruptedException {
+    public void register_shouldSendCreatedEvent(@TempDir Path temp) throws IOException {
         //given
         var injector = Guice.createInjector(new MonaLisaModule());
         FilesystemWatcher watcher = injector.getInstance(FilesystemWatcher.class);
@@ -31,7 +29,6 @@ public class FilesystemWatcherTest {
 
         //when
         var testObserver = watcher.register(pkg, FileType.DIRECTORY).test();
-        Thread.sleep(1000);
         Files.createDirectory(testFilePath);
 
         //then
@@ -46,7 +43,7 @@ public class FilesystemWatcherTest {
 
 
     @Test
-    public void register_shouldSendOnlyFilesWhenFilterEnabled(@TempDir Path temp) throws IOException, InterruptedException {
+    public void register_shouldSendOnlyFilesWhenFilterEnabled(@TempDir Path temp) throws IOException {
         //given
         var injector = Guice.createInjector(new MonaLisaModule());
         FilesystemWatcher watcher = injector.getInstance(FilesystemWatcher.class);
@@ -57,7 +54,6 @@ public class FilesystemWatcherTest {
         //when
         var testObserver = watcher.register(pkg, FileType.FILE)
                 .test();
-        Thread.sleep(1000);
         Files.createDirectory(temp.resolve(Path.of("test")));
         Files.createFile(testFilePath);
 
@@ -70,7 +66,7 @@ public class FilesystemWatcherTest {
     }
 
     @Test
-    public void register_shouldSkipNoteFiles(@TempDir Path temp) throws InterruptedException, IOException {
+    public void register_shouldSkipNoteFiles(@TempDir Path temp) throws IOException, InterruptedException {
         //given
         var injector = Guice.createInjector(new MonaLisaModule());
         FilesystemWatcher watcher = injector.getInstance(FilesystemWatcher.class);
@@ -81,18 +77,17 @@ public class FilesystemWatcherTest {
         //when
         var testObserver = watcher.register(pkg, FileType.FILE)
                 .test();
-        Thread.sleep(1000);
         Files.createFile(testFilePath);
 
         //then
         testObserver
-                .awaitCount(1)
-                .assertNoErrors()
+                .await(100, TimeUnit.MILLISECONDS);
+        testObserver.assertNoErrors()
                 .assertEmpty();
     }
 
     @Test
-    public void openAssignmentFile_shouldReadFileContents(@TempDir Path temp) throws InterruptedException, IOException {
+    public void openAssignmentFile_shouldReadFileContents(@TempDir Path temp) throws IOException {
         //given
         var injector = Guice.createInjector(new MonaLisaModule());
         FilesystemWatcher watcher = injector.getInstance(FilesystemWatcher.class);
@@ -114,7 +109,7 @@ public class FilesystemWatcherTest {
     }
 
     @Test
-    public void openAssignmentFile_shouldReadUpdatedFileContents(@TempDir Path temp) throws IOException, InterruptedException {
+    public void openAssignmentFile_shouldReadUpdatedFileContents(@TempDir Path temp) throws IOException {
         //given
         var injector = Guice.createInjector(new MonaLisaModule());
         FilesystemWatcher watcher = injector.getInstance(FilesystemWatcher.class);
@@ -123,17 +118,14 @@ public class FilesystemWatcherTest {
         when(assignment.getPath()).thenReturn(testFilePath);
         var fileContent = "test file content";
         Files.writeString(testFilePath, "another content");
+        Observer<String> observer = mock(Observer.class);
 
         //when
-        var testObserver = watcher.openAssignmentFile(assignment)
-                .test();
-        Thread.sleep(1000);
+        watcher.openAssignmentFile(assignment).subscribe(observer);
         Files.writeString(testFilePath, fileContent);
 
+
         //then
-        testObserver
-                .awaitCount(2)
-                .assertNoErrors()
-                .assertValueAt(1, fileContent);
+        verify(observer, timeout(100).atLeastOnce()).onNext(fileContent);
     }
 }

@@ -1,21 +1,17 @@
 package pl.edu.agh.monalisa.loader;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import pl.edu.agh.monalisa.guice.MonaLisaModule;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class LoaderTest {
 
-
     void setupTmp(Path temp) throws IOException {
-        temp.toFile().mkdir();
         var year = temp.resolve("2018");
         year.toFile().mkdir();
 
@@ -35,24 +31,15 @@ public class LoaderTest {
     public void initialModelLoads(@TempDir Path temp) throws IOException {
         //given
         setupTmp(temp);
-        Injector injector = Guice.createInjector(new MonaLisaModule());
-        var loader = injector.getInstance(Loader.class);
-
+        var watcher = mock(FilesystemWatcher.class);
+        when(watcher.register(any(), any())).thenReturn(mock(Observable.class));
+        var loader = new Loader(watcher, mock(NoteLoader.class));
 
         //when
         var model = loader.loadModel(temp);
-        var year = model.getChildren().get(0);
-        var subject = year.getChildren().get(0);
-        var lab = subject.getChildren().get(0);
-        var student = lab.getChildren().get(0);
 
         //then
-        assertEquals(year.getName(), "2018");
-        assertEquals(subject.getName(), "WDI");
-        assertEquals(lab.getName(), "Lab1");
-        assertEquals(student.getName(), "Student1");
-
-        assertEquals(student.getChildren().get(0).getName(), "main.py");
+        verify(watcher, timeout(100).atLeastOnce()).register(model, FileType.DIRECTORY);
     }
 
 }

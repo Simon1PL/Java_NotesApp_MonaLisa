@@ -2,7 +2,6 @@ package pl.edu.agh.monalisa.loader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import pl.edu.agh.monalisa.model.Package;
 import pl.edu.agh.monalisa.model.*;

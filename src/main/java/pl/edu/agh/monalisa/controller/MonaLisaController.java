@@ -4,14 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
@@ -43,13 +38,13 @@ public class MonaLisaController {
     private CodeArea fileView;
 
     @FXML
-    private Button undoButton;
+    private MenuItem undoButton;
 
     @FXML
-    private Button redoButton;
+    private MenuItem redoButton;
 
     @FXML
-    private Button rootPathButton;
+    private MenuItem rootPathButton;
 
     @FXML
     private TextArea noteView;
@@ -65,6 +60,12 @@ public class MonaLisaController {
 
     @FXML
     private Label noteListLabel;
+
+    @FXML
+    private Pane container;
+
+    @FXML
+    private Label fileNameLabel;
 
 
     @Inject
@@ -143,7 +144,8 @@ public class MonaLisaController {
 
         studentListView.setItems(this.selectedFile.getParent().getParent().getChildren());
         updateNoteList();
-        updatePathLabels(newSelectedFile);
+        updatePathLabels();
+        updateFileNameLabel();
     }
 
     private void initializeControls() {
@@ -158,22 +160,12 @@ public class MonaLisaController {
         rootPathButton.setOnAction((actionEvent) -> {
             DirectoryChooser fileChooser = new DirectoryChooser();
             fileChooser.setTitle("Open Resource File");
-            File selectedDirectory = fileChooser.showDialog(rootPathButton.getScene().getWindow());
+            File selectedDirectory = fileChooser.showDialog(container.getScene().getWindow());
             if (selectedDirectory != null) {
                 this.rootPath = selectedDirectory.toPath();
                 this.initializeFileTree();
             }
         });
-    }
-
-    @FXML
-    private void handleOnKeyReleased(KeyEvent event) {
-        if (event.getCode() == KeyCode.LEFT && event.isAltDown()) {
-            handleUndo();
-        }
-        if (event.getCode() == KeyCode.RIGHT && event.isAltDown()) {
-            handleRedo();
-        }
     }
 
     private void handleUndo() {
@@ -188,10 +180,10 @@ public class MonaLisaController {
         }
     }
 
-    private void updatePathLabels(AssignmentFile file) {
+    private void updatePathLabels() {
         StringBuilder stringBuilder = new StringBuilder();
         var path = model.getPath()
-                .relativize(file.getPath())
+                .relativize(selectedFile.getPath())
                 .getParent()//student
                 .getParent();//lab
 
@@ -206,6 +198,10 @@ public class MonaLisaController {
 
     private void select(GenericFile item) {
         fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), item));
+    }
+
+    private void updateFileNameLabel() {
+        fileNameLabel.setText(selectedFile.getParent().getName() + ", " + selectedFile.getName());
     }
 
 }

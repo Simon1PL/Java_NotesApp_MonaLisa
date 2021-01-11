@@ -74,9 +74,8 @@ public class FileTree extends TreeView<GenericFile> {
                     if (file instanceof Package) addListener(newTreeItem, (Package<?>) file);
                 });
             } else if (change.wasRemoved()) {
-                change.getRemoved().forEach(pkg -> {
-                    parent.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg));
-                });
+                change.getRemoved().forEach(pkg ->
+                        parent.getChildren().removeIf(treeItem -> treeItem.getValue().equals(pkg)));
             }
     }
 

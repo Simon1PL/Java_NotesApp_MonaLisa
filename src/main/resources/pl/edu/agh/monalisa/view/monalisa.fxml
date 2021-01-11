@@ -7,82 +7,100 @@
 <?import pl.edu.agh.monalisa.view.FileTree?>
 <?import javafx.geometry.Insets?>
 <?import pl.edu.agh.monalisa.view.NoteList?>
-<Pane onKeyReleased="#handleOnKeyReleased" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<Pane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
-    <HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefHeight="800.0" prefWidth="1200.0" spacing="20" style="-fx-padding: 10;">
-        <VBox spacing="10">
-            <VBox prefHeight="400.0" prefWidth="200.0">
-                <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0">
-                    <FileTree fx:id="fileTree" layoutY="151.0" maxHeight="Infinity"
-                              maxWidth="Infinity" prefHeight="771.0" prefWidth="200.0"
-                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                </AnchorPane>
+    <VBox fx:id="container">
+        <MenuBar>
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="rootPathButton" mnemonicParsing="false" text="Open"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem fx:id="undoButton" mnemonicParsing="false" text="Select Previous">
+                            <accelerator>
+                                <KeyCodeCombination alt="DOWN" code="LEFT" control="UP" meta="UP" shift="UP"
+                                                    shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="redoButton" mnemonicParsing="false" text="Select Next">
+                            <accelerator>
+                                <KeyCodeCombination alt="DOWN" code="RIGHT" control="UP" meta="UP" shift="UP"
+                                                    shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+              prefHeight="800.0" prefWidth="1200.0" spacing="20" style="-fx-padding: 10;">
+            <VBox spacing="10">
+                <VBox prefHeight="400.0" prefWidth="200.0">
+                    <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0">
+                        <FileTree fx:id="fileTree" layoutY="151.0" maxHeight="Infinity"
+                                  maxWidth="Infinity" prefHeight="771.0" prefWidth="200.0"
+                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                    </AnchorPane>
+                </VBox>
+                <TabPane prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                        <Tab text="Notes">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                    <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <Label fx:id="noteListLabel" text="">
+                                            <VBox.margin>
+                                                <Insets top="10" bottom="10"/>
+                                            </VBox.margin>
+                                        </Label>
+                                        <NoteList fx:id="noteListView" maxHeight="Infinity" prefWidth="200.0"
+                                                  VBox.vgrow="ALWAYS" focusTraversable="false"/>
+                                    </VBox>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Students">
+                            <tooltip>
+                                <Tooltip text="Students list for the chosen file's laboratory"/>
+                            </tooltip>
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                    <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <Label fx:id="studentListLabel" text="">
+                                            <VBox.margin>
+                                                <Insets top="10" bottom="10"/>
+                                            </VBox.margin>
+                                        </Label>
+                                        <ListView fx:id="studentListView" maxHeight="Infinity" prefWidth="200.0"
+                                                  VBox.vgrow="ALWAYS"/>
+                                    </VBox>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
             </VBox>
-            <TabPane prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-                <tabs>
-                    <Tab text="Notes">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                                <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
-                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <Label fx:id="noteListLabel" text="">
-                                        <VBox.margin>
-                                            <Insets top="10" bottom="10"/>
-                                        </VBox.margin>
-                                    </Label>
-                                    <NoteList fx:id="noteListView" maxHeight="Infinity" prefWidth="200.0"
-                                              VBox.vgrow="ALWAYS" focusTraversable="false"/>
-                                </VBox>
-                            </AnchorPane>
-                        </content>
-                    </Tab>
-                    <Tab text="Students list">
-                        <tooltip>
-                            <Tooltip text="Students list for the chosen file's laboratory"/>
-                        </tooltip>
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                                <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
-                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <Label fx:id="studentListLabel" text="">
-                                        <VBox.margin>
-                                            <Insets top="10" bottom="10"/>
-                                        </VBox.margin>
-                                    </Label>
-                                    <ListView fx:id="studentListView" maxHeight="Infinity" prefWidth="200.0"
-                                              VBox.vgrow="ALWAYS"/>
-                                </VBox>
-                            </AnchorPane>
-                        </content>
-                    </Tab>
-                </tabs>
-            </TabPane>
-        </VBox>
-        <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
-            <HBox spacing="10">
-                <Button fx:id="rootPathButton" mnemonicParsing="false" text="Choose file database">
-                </Button>
-                <Region HBox.hgrow="ALWAYS"/>
-                <HBox spacing="10">
-                    <Button fx:id="undoButton" mnemonicParsing="false" text="Previous">
-                        <tooltip>
-                            <Tooltip text="Alt + left arrow"/>
-                        </tooltip>
-                    </Button>
-                    <Button fx:id="redoButton" mnemonicParsing="false" text="Next">
-                        <tooltip>
-                            <Tooltip text="Alt + right arrow"/>
-                        </tooltip>
-                    </Button>
-                </HBox>
-            </HBox>
-            <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
-                      VBox.vgrow="ALWAYS"/>
-            <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>
-        </VBox>
-    </HBox>
+            <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
+                <Label fx:id="fileNameLabel" style="-fx-font-size: 20"/>
+                <VirtualizedScrollPane VBox.vgrow="ALWAYS">
+                    <content>
+                        <CodeArea fx:id="fileView" disable="true"/>
+                    </content>
+                </VirtualizedScrollPane>
+                <TitledPane text="Note">
+                    <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>
+                </TitledPane>
+            </VBox>
+        </HBox>
+    </VBox>
 </Pane>

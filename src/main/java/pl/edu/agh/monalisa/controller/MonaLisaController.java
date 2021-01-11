@@ -17,6 +17,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import pl.edu.agh.monalisa.loader.FilesystemWatcher;
 import pl.edu.agh.monalisa.loader.Loader;
 import pl.edu.agh.monalisa.model.AssignmentFile;
+import pl.edu.agh.monalisa.model.GenericFile;
 import pl.edu.agh.monalisa.model.Root;
 import pl.edu.agh.monalisa.model.Student;
 import pl.edu.agh.monalisa.view.*;
@@ -85,6 +86,7 @@ public class MonaLisaController {
     }
 
     private Stage myStage;
+
     public void setStage(Stage stage) {
         myStage = stage;
     }
@@ -166,13 +168,13 @@ public class MonaLisaController {
 
     private void handleUndo() {
         if (!history.isUndoDisabled().getValue()) {
-            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), this.history.undo()));
+            select(history.undo());
         }
     }
 
     private void handleRedo() {
         if (!history.isRedoDisabled().getValue()) {
-            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), this.history.redo()));
+            select(history.redo());
         }
     }
 
@@ -197,10 +199,11 @@ public class MonaLisaController {
     }
 
     private void initializeNoteList() {
-        noteListView.setOnShowClicked(newSelectedFile -> {
-            changeSelectedFile(newSelectedFile);
-            fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), newSelectedFile));
-        });
+        noteListView.setOnShowClicked(this::select);
+    }
+
+    private void select(GenericFile item) {
+        fileTree.getSelectionModel().select(FileTree.getTreeViewItem(fileTree.getRoot(), item));
     }
 
 }

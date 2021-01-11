@@ -92,7 +92,7 @@ public class MonaLisaController {
 
     private void initializeFileTreeSelectionListener() {
         fileTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.getValue() instanceof AssignmentFile) {
+            if (newValue != null && newValue.getValue() instanceof AssignmentFile) {
                 var assignmentFile = (AssignmentFile) newValue.getValue();
                 history.add(assignmentFile);
                 changeSelectedFile(assignmentFile);

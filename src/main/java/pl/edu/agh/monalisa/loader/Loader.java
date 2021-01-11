@@ -9,11 +9,7 @@ import pl.edu.agh.monalisa.model.*;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Singleton
 public class Loader {
@@ -39,30 +35,18 @@ public class Loader {
     }
 
     public Root loadModel(Path rootPath) {
-        var files = rootPath.toFile().listFiles();
-        if (files == null) throw new IllegalArgumentException("Root path must be a directory");
+        if (!rootPath.toFile().isDirectory()) throw new IllegalArgumentException("Root path must be a directory");
 
-        var years = Arrays.stream(files)
-                .map(this::loadYear)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        Root root = new Root(rootPath.getFileName().toString(), rootPath.getParent(), years);
+        var root = new Root(rootPath.getFileName().toString(), rootPath.getParent());
 
         registerPackageListener(root, FileType.DIRECTORY, this::loadYear);
         return root;
     }
 
     private Year loadYear(File yearFile) {
-        var subjectFiles = yearFile.listFiles();
-        if (subjectFiles == null) return null;
+        if (!yearFile.isDirectory()) return null;
 
-        var subjects = Arrays.stream(subjectFiles)
-                .map(this::loadSubject)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        var year = new Year(yearFile.getName(), yearFile.getParentFile().toPath(), subjects);
+        var year = new Year(yearFile.getName(), yearFile.getParentFile().toPath());
 
         registerPackageListener(year, FileType.DIRECTORY, this::loadSubject);
 
@@ -70,30 +54,18 @@ public class Loader {
     }
 
     private Subject loadSubject(File subjectFile) {
-        var labFiles = subjectFile.listFiles();
-        if (labFiles == null) return null;
+        if (!subjectFile.isDirectory()) return null;
 
-        var labs = Arrays.stream(labFiles)
-                .map(this::loadLab)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        var subject = new Subject(subjectFile.getName(), subjectFile.getParentFile().toPath(), labs);
+        var subject = new Subject(subjectFile.getName(), subjectFile.getParentFile().toPath());
 
         registerPackageListener(subject, FileType.DIRECTORY, this::loadLab);
         return subject;
     }
 
     private Lab loadLab(File labFile) {
-        var studentFiles = labFile.listFiles();
-        if (studentFiles == null) return null;
+        if (!labFile.isDirectory()) return null;
 
-        var lab = new Lab(labFile.getName(), labFile.getParentFile().toPath(), new ArrayList<>());
-
-        Arrays.stream(studentFiles)
-                .map(studentFile -> loadStudent(studentFile, lab))
-                .filter(Objects::nonNull)
-                .forEach(lab::addChild);
+        var lab = new Lab(labFile.getName(), labFile.getParentFile().toPath());
 
         registerPackageListener(lab, FileType.DIRECTORY, (file -> loadStudent(file, lab)));
 
@@ -101,31 +73,18 @@ public class Loader {
     }
 
     private Student loadStudent(File studentFile, Lab lab) {
-        var assignmentFiles = studentFile.listFiles();
-        if (assignmentFiles == null) return null;
+        if (!studentFile.isDirectory()) return null;
 
-        var student = new Student(studentFile.getName(), lab, new ArrayList<>());
+        var student = new Student(studentFile.getName(), lab);
 
-        Arrays.stream(assignmentFiles)
-                .filter(File::isFile)
-                .filter(file -> !file.toString().endsWith(NoteLoader.NOTE_EXTENSION))
-                .map(file -> new AssignmentFile(file.getName(), student))
-                .forEach(student::addChild);
-
-        filesystemListener.register(student, FileType.FILE)
-                .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(event -> {
-                    if (event.getKind() == FileSystemEvent.EventKind.CREATED) {
-                        File assignmentFile = event.getTarget().toFile();
-                        student.addChild(new AssignmentFile(assignmentFile.getName(), student));
-                    } else if (event.getKind() == FileSystemEvent.EventKind.DELETED) {
-                        student.getChildren().removeIf(a -> a.getPath().equals(event.getTarget()));
-                    }
-                });
-
-        student.getChildren().forEach(noteLoader::setupAssignmentFile);
+        registerPackageListener(student, FileType.FILE, (file -> loadAssignmentFile(file, student)));
 
         return student;
+    }
+
+    private AssignmentFile loadAssignmentFile(File file, Student parentStudent) {
+        var assignmentFile = new AssignmentFile(file.getName(), parentStudent);
+        noteLoader.setupAssignmentFile(assignmentFile);
+        return assignmentFile;
     }
 }

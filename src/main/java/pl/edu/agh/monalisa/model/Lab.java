@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Lab extends Package<Student> {
 
-    public Lab(String name, Subject subject) {
-        super(name, subject.getPath());
+    public Lab(String name, Path parent) {
+        super(name, parent);
     }
 
     public Lab(String name, Path parent, List<Student> students) {

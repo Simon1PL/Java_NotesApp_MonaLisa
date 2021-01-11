@@ -13,6 +13,7 @@ public class NoteList extends ListView<AssignmentFile> {
 
     public NoteList() {
         setCellFactory(param -> new NoteCell(showCallback));
+        setSelectionModel(new NoSelectionModel<>());
     }
 
     public void setSelectedFile(AssignmentFile file) {

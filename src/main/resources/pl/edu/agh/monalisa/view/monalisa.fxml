@@ -10,7 +10,7 @@
 <Pane onKeyReleased="#handleOnKeyReleased" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pl.edu.agh.monalisa.controller.MonaLisaController">
     <HBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-              prefHeight="800.0" prefWidth="1200.0" spacing="20" style="-fx-padding: 10;">
+          prefHeight="800.0" prefWidth="1200.0" spacing="20" style="-fx-padding: 10;">
         <VBox spacing="10">
             <VBox prefHeight="400.0" prefWidth="200.0">
                 <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="0.0" minWidth="0.0">
@@ -22,30 +22,32 @@
             </VBox>
             <TabPane prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                 <tabs>
-                <Tab text="Notes">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                            <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
-                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <Tab text="Notes">
+                        <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <Label fx:id="noteListLabel" text="">
                                         <VBox.margin>
                                             <Insets top="10" bottom="10"/>
                                         </VBox.margin>
                                     </Label>
                                     <NoteList fx:id="noteListView" maxHeight="Infinity" prefWidth="200.0"
-                                              VBox.vgrow="ALWAYS"/>
-                            </VBox>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab text="Students list">
-                    <tooltip><Tooltip text="Students list for the chosen file's laboratory"/></tooltip>
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                            <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
-                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                              VBox.vgrow="ALWAYS" focusTraversable="false"/>
+                                </VBox>
+                            </AnchorPane>
+                        </content>
+                    </Tab>
+                    <Tab text="Students list">
+                        <tooltip>
+                            <Tooltip text="Students list for the chosen file's laboratory"/>
+                        </tooltip>
+                        <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                <VBox layoutX="59.0" layoutY="105.0" prefWidth="200.0"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <Label fx:id="studentListLabel" text="">
                                         <VBox.margin>
                                             <Insets top="10" bottom="10"/>
@@ -53,30 +55,34 @@
                                     </Label>
                                     <ListView fx:id="studentListView" maxHeight="Infinity" prefWidth="200.0"
                                               VBox.vgrow="ALWAYS"/>
-                            </VBox>
-                        </AnchorPane>
-                    </content>
-                </Tab>
+                                </VBox>
+                            </AnchorPane>
+                        </content>
+                    </Tab>
                 </tabs>
             </TabPane>
         </VBox>
-            <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
+        <VBox maxWidth="Infinity" prefHeight="400.0" spacing="20" HBox.hgrow="ALWAYS">
+            <HBox spacing="10">
+                <Button fx:id="rootPathButton" mnemonicParsing="false" text="Choose file database">
+                </Button>
+                <Region HBox.hgrow="ALWAYS"/>
                 <HBox spacing="10">
-                    <Button fx:id="rootPathButton" mnemonicParsing="false" text="Choose file database">
+                    <Button fx:id="undoButton" mnemonicParsing="false" text="Previous">
+                        <tooltip>
+                            <Tooltip text="Alt + left arrow"/>
+                        </tooltip>
                     </Button>
-                    <Region HBox.hgrow="ALWAYS"></Region>
-                    <HBox spacing="10">
-                        <Button fx:id="undoButton" mnemonicParsing="false" text="Previous">
-                            <tooltip><Tooltip text="Alt + left arrow"/></tooltip>
-                        </Button>
-                        <Button fx:id="redoButton" mnemonicParsing="false" text="Next">
-                            <tooltip><Tooltip text="Alt + right arrow"/></tooltip>
-                        </Button>
-                    </HBox>
+                    <Button fx:id="redoButton" mnemonicParsing="false" text="Next">
+                        <tooltip>
+                            <Tooltip text="Alt + right arrow"/>
+                        </tooltip>
+                    </Button>
                 </HBox>
-                <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
-                          VBox.vgrow="ALWAYS"/>
-                <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>
-            </VBox>
+            </HBox>
+            <CodeArea fx:id="fileView" disable="true" maxHeight="Infinity" maxWidth="Infinity"
+                      VBox.vgrow="ALWAYS"/>
+            <TextArea fx:id="noteView" prefHeight="200.0" prefWidth="200.0"/>
+        </VBox>
     </HBox>
 </Pane>

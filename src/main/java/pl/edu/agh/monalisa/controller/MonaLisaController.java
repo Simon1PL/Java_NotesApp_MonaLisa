@@ -110,6 +110,20 @@ public class MonaLisaController {
 
     private void initializeStudentView() {
         studentListView.setCellFactory(param -> new StudentCell());
+        studentListView.setOnMouseClicked(event -> {
+            var selected = studentListView.getSelectionModel().getSelectedItem();
+            if (selected != null && !selected.getChildren().isEmpty()) {
+                select(selected.getChildren().get(0));
+            }
+        });
+    }
+
+    private void initializeNoteList() {
+        noteListView.setOnShowClicked(this::select);
+    }
+
+    private void updateNoteList() {
+        noteListView.setSelectedFile(this.selectedFile);
     }
 
     private void changeSelectedFile(AssignmentFile newSelectedFile) {
@@ -188,14 +202,6 @@ public class MonaLisaController {
         }
         studentListLabel.setText(stringBuilder.toString());
         noteListLabel.setText(stringBuilder.toString());
-    }
-
-    private void updateNoteList() {
-        noteListView.setSelectedFile(this.selectedFile);
-    }
-
-    private void initializeNoteList() {
-        noteListView.setOnShowClicked(this::select);
     }
 
     private void select(GenericFile item) {

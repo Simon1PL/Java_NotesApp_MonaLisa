@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2021-01-10T03:51:40" hostname="SPEEDER" time="10.202">
+  <properties/>
+  <testcase name="openAssignmentFile_shouldReadFileContents(Path)" classname="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" time="1.073"/>
+  <testcase name="register_shouldSendOnlyFilesWhenFilterEnabled(Path)" classname="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" time="1.06"/>
+  <testcase name="register_shouldSkipNoteFiles(Path)" classname="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" time="6.021"/>
+  <testcase name="register_shouldSendCreatedEvent(Path)" classname="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" time="1.019"/>
+  <testcase name="openAssignmentFile_shouldReadUpdatedFileContents(Path)" classname="pl.edu.agh.monalisa.loader.FilesystemWatcherTest" time="1.024"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,58 @@
+pl/edu/agh/monalisa/loader/NoteLoader.java
+ pl.edu.agh.monalisa.loader.NoteLoader
+pl/edu/agh/monalisa/controller/History.java
+ pl.edu.agh.monalisa.controller.History
+pl/edu/agh/monalisa/view/NoSelectionModel.java
+ pl.edu.agh.monalisa.view.NoSelectionModel
+pl/edu/agh/monalisa/view/GenericSyntaxHighlighter.java
+ pl.edu.agh.monalisa.view.GenericSyntaxHighlighter
+pl/edu/agh/monalisa/model/Lab.java
+ pl.edu.agh.monalisa.model.Lab
+pl/edu/agh/monalisa/view/StyleGenerator.java
+ pl.edu.agh.monalisa.view.StyleGenerator
+pl/edu/agh/monalisa/model/Student.java
+ pl.edu.agh.monalisa.model.Student
+pl/edu/agh/monalisa/model/RegularFile.java
+ pl.edu.agh.monalisa.model.RegularFile
+pl/edu/agh/monalisa/view/NoteCell.java
+ pl.edu.agh.monalisa.view.NoteCell
+pl/edu/agh/monalisa/model/AssignmentFile.java
+ pl.edu.agh.monalisa.model.AssignmentFile
+pl/edu/agh/monalisa/loader/FilesystemWatcher.java
+ pl.edu.agh.monalisa.loader.FilesystemWatcher
+pl/edu/agh/monalisa/view/StudentCell.java
+ pl.edu.agh.monalisa.view.StudentCell
+pl/edu/agh/monalisa/controller/MonaLisaController.java
+ pl.edu.agh.monalisa.controller.MonaLisaController
+pl/edu/agh/monalisa/model/GenericFile.java
+ pl.edu.agh.monalisa.model.GenericFile
+pl/edu/agh/monalisa/model/Package.java
+ pl.edu.agh.monalisa.model.Package
+pl/edu/agh/monalisa/loader/FileSystemEvent.java
+ pl.edu.agh.monalisa.loader.FileSystemEvent
+ pl.edu.agh.monalisa.loader.FileSystemEvent$EventKind
+pl/edu/agh/monalisa/model/Subject.java
+ pl.edu.agh.monalisa.model.Subject
+pl/edu/agh/monalisa/loader/FileType.java
+ pl.edu.agh.monalisa.loader.FileType
+pl/edu/agh/monalisa/view/VisibleParagraphStyler.java
+ pl.edu.agh.monalisa.view.VisibleParagraphStyler
+pl/edu/agh/monalisa/model/Year.java
+ pl.edu.agh.monalisa.model.Year
+pl/edu/agh/monalisa/loader/Loader.java
+ pl.edu.agh.monalisa.loader.Loader
+pl/edu/agh/monalisa/view/NoteList.java
+ pl.edu.agh.monalisa.view.NoteList
+pl/edu/agh/monalisa/MonaLisaApplication.java
+ pl.edu.agh.monalisa.MonaLisaApplication
+pl/edu/agh/monalisa/view/FileTree.java
+ pl.edu.agh.monalisa.view.FileTree
+pl/edu/agh/monalisa/view/FileCellFactory.java
+ pl.edu.agh.monalisa.view.FileCellFactory
+ pl.edu.agh.monalisa.view.FileCellFactory$1
+pl/edu/agh/monalisa/model/Root.java
+ pl.edu.agh.monalisa.model.Root
+pl/edu/agh/monalisa/guice/MonaLisaModule.java
+ pl.edu.agh.monalisa.guice.MonaLisaModule
+pl/edu/agh/monalisa/model/Note.java
+ pl.edu.agh.monalisa.model.Note
